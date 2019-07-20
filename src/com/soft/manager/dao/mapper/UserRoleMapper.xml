@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.soft.manager.dao.UserRoleDao">
+	<resultMap id="BaseResultMap" type="com.soft.common.domain.UserRole">
+		<id column="USER_ID" property="userId" jdbcType="BIGINT" />
+		<id column="ROLE_ID" property="roleId" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		USER_ID, ROLE_ID
+	</sql>
+<!-- 	根据roleID查找角色是否为空，为空时执行insert，不为空执行update -->
+	<select id="findUserRoleById" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM USER_ROLE
+		
+		WHERE USER_ID = #{employeeId,jdbcType=INTEGER}
+	</select>
+	<!-- 根据用户角色ID更新用户角色信息 -->
+	<update id="updateUserRoleById" parameterType="com.soft.common.domain.UserRole">
+		UPDATE USER_ROLE SET
+		ROLE_ID = #{roleId,jdbcType=INTEGER}
+		WHERE USER_ID = #{userId,jdbcType=BIGINT}
+	</update>
+<!-- 	新增用户角色信息  -->
+	<insert id="insertUserRole" parameterType="com.soft.common.domain.UserRole">
+		INSERT INTO USER_ROLE(ROLE_ID, USER_ID)
+		VALUES (#{roleId,jdbcType=INTEGER},
+		#{userId,jdbcType=BIGINT})
+	</insert>
+	<!-- 根据用户ID批量删除用户角色信息 -->
+	<delete id="deleteUserRolesByUserId" parameterType="java.util.Map">
+		DELETE FROM
+		USER_ROLE
+		WHERE USER_ID IN
+		<foreach item="id" index="index" collection="idArray" open="("
+			separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+</mapper>

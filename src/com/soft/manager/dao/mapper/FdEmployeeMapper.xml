@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.soft.manager.dao.FdEmployeeDao">
+	<resultMap id="BaseResultMap" type="com.soft.common.domain.FdEmployee">
+		<id column="ID" property="id" jdbcType="BIGINT" />
+		<result column="ID_CARD" property="idCard" jdbcType="VARCHAR" />
+		<result column="NAME" property="name" jdbcType="VARCHAR" />
+		<result column="GENDER" property="gender" jdbcType="VARCHAR" />
+		<result column="BIRTHDAY" property="birthday" jdbcType="TIMESTAMP" />
+		<result column="BIRTH_PLACE" property="birthPlace" jdbcType="VARCHAR" />
+		<result column="NATION" property="nation" jdbcType="VARCHAR" />
+		<result column="SCHOOL" property="school" jdbcType="VARCHAR" />
+		<result column="MAJOR" property="major" jdbcType="VARCHAR" />
+		<result column="DEGREE" property="degree" jdbcType="VARCHAR" />
+		<result column="POSITION" property="position" jdbcType="VARCHAR" />
+		<result column="ADDRESS" property="address" jdbcType="VARCHAR" />
+		<result column="TELEPHONE" property="telephone" jdbcType="VARCHAR" />
+		<result column="ORG_CODE" property="orgCode" jdbcType="VARCHAR" />
+		<result column="ORG_NAME" property="orgName" jdbcType="VARCHAR" />
+		<result column="DELETE_SIGN" property="deleteSign" jdbcType="BIT" />
+		<result column="VERSION" property="version" jdbcType="TIMESTAMP" />
+		<result column="UPDATE_USER" property="updateUser" jdbcType="BIGINT" />
+		<result column="UPDATE_DATE" property="updateDate" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER" property="createUser" jdbcType="BIGINT" />
+		<result column="CREATE_DATE" property="createDate" jdbcType="TIMESTAMP" />
+
+		<result column="GENDER_NAME" property="genderName" jdbcType="VARCHAR" />
+		<result column="NATION_NAME" property="nationName" jdbcType="VARCHAR" />
+		<result column="DEGREE_NAME" property="degreeName" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, ID_CARD, NAME, GENDER, BIRTHDAY, BIRTH_PLACE, NATION,
+		SCHOOL,
+		MAJOR, DEGREE, POSITION, ADDRESS, TELEPHONE, ORG_CODE, ORG_NAME
+	</sql>
+
+	<!-- 新增从业人员信息 -->
+	<insert id="insertEmployee" parameterType="com.soft.common.domain.FdEmployee">
+		INSERT INTO
+		FD_EMPLOYEE (
+		ID, ID_CARD, NAME, GENDER,BIRTHDAY,
+		BIRTH_PLACE,
+		NATION,
+		SCHOOL,MAJOR,
+		DEGREE, POSITION,ADDRESS, TELEPHONE,
+		ORG_CODE,ORG_NAME,DELETE_SIGN,UPDATE_USER,
+		UPDATE_DATE,CREATE_USER,
+		CREATE_DATE)
+		VALUES (#{id,jdbcType=BIGINT},
+		#{idCard,jdbcType=VARCHAR},
+		#{name,jdbcType=VARCHAR},
+		#{gender,jdbcType=VARCHAR},
+		#{birthday,jdbcType=TIMESTAMP},
+		#{birthPlace,jdbcType=VARCHAR},
+		#{nation,jdbcType=VARCHAR},
+		#{school,jdbcType=VARCHAR},
+		#{major,jdbcType=VARCHAR},
+		#{degree,jdbcType=VARCHAR},
+		#{position,jdbcType=VARCHAR},
+		#{address,jdbcType=VARCHAR},
+		#{telephone,jdbcType=VARCHAR},
+		#{orgCode,jdbcType=VARCHAR},
+		#{orgName,jdbcType=VARCHAR},
+		#{deleteSign,jdbcType=BIT},
+		#{updateUser,jdbcType=BIGINT},
+		#{updateDate,jdbcType=TIMESTAMP},
+		#{createUser,jdbcType=BIGINT},
+		#{createDate,jdbcType=TIMESTAMP})
+	</insert>
+
+	<!-- 根据从业人员信息ID批量删除从业人员信息 -->
+	<delete id="deleteEmployeesById" parameterType="java.util.Map">
+		UPDATE
+		FD_EMPLOYEE
+		SET
+		DELETE_SIGN = true
+		WHERE ID IN
+		<foreach item="id" index="index" collection="idArray" open="("
+			separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<!-- 根据从业人员信息ID查询从业人员信息 -->
+	<select id="findEmployeeById" resultMap="BaseResultMap"
+		parameterType="java.lang.Long">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM FD_EMPLOYEE
+		WHERE ID = #{id,jdbcType=BIGINT}
+	</select>
+
+	<!-- 根据从业人员信息ID更新从业人员信息 -->
+	<update id="updateEmployeeById" parameterType="com.soft.common.domain.FdEmployee">
+		UPDATE
+		FD_EMPLOYEE
+		SET ID_CARD=#{idCard,jdbcType=VARCHAR},
+		NAME=#{name,jdbcType=VARCHAR},
+		GENDER=#{gender,jdbcType=VARCHAR},
+		BIRTHDAY=#{birthday,jdbcType=TIMESTAMP},
+		BIRTH_PLACE=#{birthPlace,jdbcType=VARCHAR},
+		NATION=#{nation,jdbcType=VARCHAR},
+		SCHOOL=#{school,jdbcType=VARCHAR},
+		MAJOR=#{major,jdbcType=VARCHAR},
+		DEGREE=#{degree,jdbcType=VARCHAR},
+		POSITION=#{position,jdbcType=VARCHAR},
+		ADDRESS=#{address,jdbcType=VARCHAR},
+		TELEPHONE=#{telephone,jdbcType=VARCHAR},
+		ORG_CODE=#{orgCode,jdbcType=VARCHAR},
+		ORG_NAME=#{orgName,jdbcType=VARCHAR},
+		UPDATE_USER=#{updateUser,jdbcType=BIGINT},
+		UPDATE_DATE=#{updateDate,jdbcType=TIMESTAMP}
+		WHERE ID =
+		#{id,jdbcType=BIGINT}
+	</update>
+
+	<!-- 根据查询条件查询部门信息笔数 -->
+	<select id="getEmployeeCount" parameterType="com.soft.common.domain.FdEmployee"
+		resultType="java.lang.Integer">
+		SELECT
+		COUNT(ID)
+		FROM FD_EMPLOYEE
+		WHERE DELETE_SIGN=false
+		<if test="name != null and name != ''">
+			AND NAME like
+			CONCAT('%',#{name,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="idCard != null and idCard != ''">
+			AND ID_CARD like
+			CONCAT('%',#{idCard,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="major != null and major != ''">
+			AND MAJOR like
+			CONCAT('%',#{major,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="degree != null and degree != ''">
+			AND DEGREE=#{degree,jdbcType=VARCHAR}
+		</if>
+		<if test="orgCode != null and orgCode != ''">
+			AND ORG_CODE like
+			CONCAT('%',#{orgCode,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="orgName != null and orgName != ''">
+			AND ORG_NAME like
+			CONCAT('%',#{orgName,jdbcType=VARCHAR},'%')
+		</if>
+	</select>
+
+	<!-- 根据查询条件查询部门信息列表 -->
+	<select id="getEmployeeList" parameterType="java.util.Map"
+		resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		,
+		G.VALUE AS GENDER_NAME,
+		N.VALUE AS NATION_NAME,
+		D. VALUE AS DEGREE_NAME
+		FROM FD_EMPLOYEE A
+		LEFT
+		JOIN CODE_DATA G ON A.GENDER=G.CODE1 AND G.TYPE='002'
+		LEFT JOIN
+		CODE_DATA N ON A.NATION=N.CODE1 AND N.TYPE='114'
+		LEFT JOIN CODE_DATA D
+		ON A.DEGREE=D.CODE1 AND D.TYPE='115'
+		WHERE DELETE_SIGN=false
+		<if test="record.name != null and record.name != ''">
+			AND NAME like
+			CONCAT('%',#{record.name,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="record.idCard != null and record.idCard != ''">
+			AND ID_CARD like
+			CONCAT('%',#{record.idCard,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="record.major != null and record.major != ''">
+			AND MAJOR like
+			CONCAT('%',#{record.major,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="record.degree != null and record.degree != ''">
+			AND DEGREE=#{record.degree,jdbcType=VARCHAR}
+		</if>
+		<if test="record.orgCode != null and record.orgCode != ''">
+			AND ORG_CODE like
+			CONCAT('%',#{record.orgCode,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="record.orgName != null and record.orgName != ''">
+			AND ORG_NAME like
+			CONCAT('%',#{record.orgName,jdbcType=VARCHAR},'%')
+		</if>
+
+		ORDER BY A.CREATE_DATE DESC
+		limit
+		#{startIndex}, #{pageSize}
+	</select>
+
+</mapper>

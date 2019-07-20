@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.soft.manager.dao.MenuInfoDao">
+	<resultMap id="BaseResultMap" type="com.soft.common.domain.MenuInfo">
+		<id column="MENU_ID" property="menuId" jdbcType="INTEGER" />
+		<result column="MENU_NAME" property="menuName" jdbcType="VARCHAR" />
+		<result column="MENU_URL" property="menuUrl" jdbcType="VARCHAR" />
+		<result column="PARENT_ID" property="parentId" jdbcType="INTEGER" />
+		<result column="MENU_ICON" property="menuIcon" jdbcType="VARCHAR" />
+		<result column="SORT_NO" property="menuSort" jdbcType="INTEGER" />
+		<result column="IS_PERSONAL" property="isPersonal" jdbcType="VARCHAR" />
+		<result column="IS_ORGANIZATION" property="isOrganization"
+			jdbcType="VARCHAR" />
+		<result column="IS_CHECKED" property="isChecked" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		MENU_INFO.MENU_ID, MENU_NAME, MENU_URL,
+		MENU_INFO.PARENT_ID,
+		MENU_ICON,IS_PERSONAL,IS_ORGANIZATION,
+		SORT_NO
+	</sql>
+	<select id="getMenuList" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM MENU_INFO
+		ORDER BY MENU_ID ASC,SORT_NO ASC
+	</select>
+	<!-- 查询管理员可分配菜单 -->
+	<select id="getAdminMenuList" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		SELECT DISTINCT
+		<include refid="Base_Column_List" />
+		,CASE WHEN ROLE_INFO.ROLE_ID IS NULL THEN '0' ELSE '1' END AS
+		IS_CHECKED
+		FROM MENU_INFO LEFT JOIN ROLE_MENU ON
+		MENU_INFO.MENU_ID=ROLE_MENU.MENU_ID AND
+		ROLE_MENU.ROLE_ID=#{roleId,jdbcType=INTEGER}
+		LEFT JOIN
+		ROLE_INFO ON
+		ROLE_INFO.ROLE_ID=ROLE_MENU.ROLE_ID
+		ORDER BY MENU_INFO.MENU_ID
+		ASC,SORT_NO ASC
+	</select>
+	<!-- 查询其他角色可分配菜单 -->
+	<select id="getAllocateMenuList" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		SELECT DISTINCT
+		<include refid="Base_Column_List" />
+		,CASE WHEN (SELECT COUNT(*) FROM ROLE_MENU A WHERE
+		A.ROLE_ID=#{roleId,jdbcType=INTEGER} AND A.MENU_ID=ROLE_MENU.MENU_ID
+		AND A.ACTION_ID = ROLE_MENU.ACTION_ID)=0 THEN '0' ELSE '1' END AS
+		IS_CHECKED FROM MENU_INFO
+		LEFT JOIN ALLOCATE_MENU ON
+		MENU_INFO.MENU_ID=ALLOCATE_MENU.MENU_ID
+		LEFT JOIN ROLE_MENU
+		ON
+		ALLOCATE_MENU.MENU_ID = ROLE_MENU.MENU_ID AND
+		ROLE_MENU.ROLE_ID=#{roleId,jdbcType=INTEGER} AND
+		ALLOCATE_MENU.ACTION_ID=ROLE_MENU.ACTION_ID
+		LEFT JOIN ROLE_INFO on
+		ROLE_INFO.ROLE_ID=ROLE_MENU.ROLE_ID
+		WHERE
+		ALLOCATE_MENU.ROLE_ID=#{currtRoleId,jdbcType=INTEGER}
+		AND ALLOCATE_MENU.ACTION_ID=''
+		ORDER BY
+		MENU_INFO.MENU_ID
+		ASC,SORT_NO ASC
+	</select>
+</mapper>

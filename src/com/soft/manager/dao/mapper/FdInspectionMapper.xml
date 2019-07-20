@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.soft.manager.dao.FdInspectionDao">
+	<resultMap id="BaseResultMap" type="com.soft.common.domain.FdInspection">
+		<id column="ID" property="id" jdbcType="BIGINT" />
+		<result column="CASE_CODE" property="caseCode" jdbcType="VARCHAR" />
+		<result column="CASE_NAME" property="caseName" jdbcType="VARCHAR" />
+		<result column="EXEC_ORG" property="execOrg" jdbcType="VARCHAR" />
+		<result column="CASE_TYPE" property="caseType" jdbcType="VARCHAR" />
+		<result column="RELATED_THINGS" property="relatedThings" jdbcType="VARCHAR" />
+		<result column="CASE_ATTR" property="caseAttr" jdbcType="VARCHAR" />
+		<result column="CASE_LINK" property="caseLink" jdbcType="VARCHAR" />
+		<result column="PUNISH_DOC" property="punishDoc" jdbcType="VARCHAR" />
+		<result column="ORG_NAME" property="orgName" jdbcType="VARCHAR" />
+		<result column="ORG_CODE" property="orgCode" jdbcType="VARCHAR" />
+		<result column="ORG_ADDRESS" property="orgAddress" jdbcType="VARCHAR" />
+		<result column="CORPORATION_NAME" property="corporationName" jdbcType="VARCHAR" />
+		<result column="LEADER" property="leader" jdbcType="VARCHAR" />
+		<result column="TAX_INFO" property="taxInfo" jdbcType="VARCHAR" />
+		<result column="ILLEGAL_FACTS" property="illegalFacts" jdbcType="VARCHAR" />
+		<result column="PUNISH_KIND" property="punishKind" jdbcType="VARCHAR" />
+		<result column="PUNISH_EXEC" property="punishExec" jdbcType="VARCHAR" />
+		<result column="FILING_TIME" property="filingTime" jdbcType="TIMESTAMP" />
+		<result column="CLOSE_CASE_TIME" property="closeCaseTime" jdbcType="TIMESTAMP" />
+		<result column="PUNISH_DATE" property="punishDate" jdbcType="TIMESTAMP" />
+		<result column="CONFISCATE_VALUE" property="confiscateValue" jdbcType="DECIMAL" />
+		<result column="CASE_AMOUNT" property="caseAmount" jdbcType="DECIMAL" />
+		<result column="DESTROY_VALUE" property="destroyValue" jdbcType="DECIMAL" />
+		<result column="FINE" property="fine" jdbcType="DECIMAL" />
+		<result column="BILL_NO" property="billNo" jdbcType="VARCHAR" />
+		<result column="PAYMENT_TIME" property="paymentTime" jdbcType="TIMESTAMP" />
+		<result column="CASE_SOURCE" property="caseSource" jdbcType="VARCHAR" />
+		<result column="CASE_SOURCE_TIME" property="caseSourceTime" jdbcType="TIMESTAMP" />
+		<result column="GROUP_NO" property="groupNo" jdbcType="VARCHAR" />
+		<result column="DELETE_SIGN" property="deleteSign" jdbcType="BIT" />
+		<result column="VERSION" property="version" jdbcType="TIMESTAMP" />
+		<result column="UPDATE_USER" property="updateUser" jdbcType="BIGINT" />
+		<result column="UPDATE_DATE" property="updateDate" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER" property="createUser" jdbcType="BIGINT" />
+		<result column="CREATE_DATE" property="createDate" jdbcType="TIMESTAMP" />
+		<!--扩展字段 -->
+		<result column="CASE_TYPE_NAME" property="caseTypeName" jdbcType="VARCHAR" />
+		<result column="CASE_ATTR_NAME" property="caseAttrName" jdbcType="VARCHAR" />
+		<result column="RELATED_THINGS_NAME" property="relatedThingsName" jdbcType="VARCHAR" />
+		<result column="CASE_LINK_NAME" property="caseLinkName" jdbcType="VARCHAR" />
+		<result column="CASE_SOURCE_NAME" property="caseSourceName" jdbcType="VARCHAR" />
+		<result column="EXEC_ORG_NAME" property="execOrgName" jdbcType="VARCHAR" />
+		<result column="FILING_YEAR" property="filingYear" jdbcType="VARCHAR" />
+		<result column="FILING_MONTH" property="filingMonth" jdbcType="VARCHAR" />
+		<result column="FILING_COUNT" property="filingCount" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID,CASE_CODE,CASE_NAME,EXEC_ORG,CASE_TYPE,RELATED_THINGS,CASE_ATTR,CASE_LINK,
+		PUNISH_DOC,ORG_NAME,ORG_CODE,ORG_ADDRESS,CORPORATION_NAME,ILLEGAL_FACTS,PUNISH_KIND,
+		PUNISH_EXEC,FILING_TIME,CLOSE_CASE_TIME,PUNISH_DATE,CONFISCATE_VALUE,CASE_AMOUNT,
+		DESTROY_VALUE,FINE,BILL_NO,PAYMENT_TIME,CASE_SOURCE,CASE_SOURCE_TIME,GROUP_NO,VERSION,
+		FILING_YEAR,FILING_MONTH,LEADER,TAX_INFO
+	</sql>
+
+	<!-- 新增食品药品稽查行政处罚案件 -->
+	<insert id="insertInspection" parameterType="com.soft.common.domain.FdInspection">
+		insert into
+		FD_INSPECTION (ID,CASE_CODE,CASE_NAME,EXEC_ORG,CASE_TYPE,RELATED_THINGS,CASE_ATTR,CASE_LINK,
+		PUNISH_DOC,ORG_NAME,ORG_CODE,ORG_ADDRESS,CORPORATION_NAME,LEADER,TAX_INFO,ILLEGAL_FACTS,PUNISH_KIND,
+		PUNISH_EXEC,FILING_TIME,CLOSE_CASE_TIME,PUNISH_DATE,CONFISCATE_VALUE,CASE_AMOUNT,
+		DESTROY_VALUE,FINE,BILL_NO,PAYMENT_TIME,CASE_SOURCE,CASE_SOURCE_TIME,GROUP_NO,
+		FILING_YEAR,FILING_MONTH,DELETE_SIGN,UPDATE_USER,UPDATE_DATE,CREATE_USER, CREATE_DATE
+		)
+		values (#{id,jdbcType=BIGINT},
+		#{caseCode,jdbcType=VARCHAR},
+		#{caseName,jdbcType=VARCHAR},
+		#{execOrg,jdbcType=VARCHAR},
+		#{caseType,jdbcType=VARCHAR},
+		#{relatedThings,jdbcType=VARCHAR},
+		#{caseAttr,jdbcType=VARCHAR},
+		#{caseLink,jdbcType=VARCHAR},
+		#{punishDoc,jdbcType=VARCHAR},
+		#{orgName,jdbcType=VARCHAR},
+		#{orgCode,jdbcType=VARCHAR},
+		#{orgAddress,jdbcType=VARCHAR},
+		#{corporationName,jdbcType=VARCHAR},
+		#{leader,jdbcType=VARCHAR},
+		#{taxInfo,jdbcType=VARCHAR},
+		#{illegalFacts,jdbcType=VARCHAR},
+		#{punishKind,jdbcType=VARCHAR},
+		#{punishExec,jdbcType=VARCHAR},
+		#{filingTime,jdbcType=TIMESTAMP},
+		#{closeCaseTime,jdbcType=TIMESTAMP},
+		#{punishDate,jdbcType=TIMESTAMP},
+		#{confiscateValue,jdbcType=DECIMAL},
+		#{caseAmount,jdbcType=DECIMAL},
+		#{destroyValue,jdbcType=DECIMAL},
+		#{fine,jdbcType=DECIMAL},
+		#{billNo,jdbcType=VARCHAR},
+		#{paymentTime,jdbcType=TIMESTAMP},
+		#{caseSource,jdbcType=VARCHAR},
+		#{caseSourceTime,jdbcType=TIMESTAMP},
+		#{groupNo,jdbcType=VARCHAR},
+		#{filingYear,jdbcType=VARCHAR},
+		#{filingMonth,jdbcType=VARCHAR},
+		#{deleteSign,jdbcType=BIT},
+		#{updateUser,jdbcType=BIGINT},
+		#{updateDate,jdbcType=TIMESTAMP},
+		#{createUser,jdbcType=BIGINT},
+		#{createDate,jdbcType=TIMESTAMP}
+		)
+	</insert>
+
+	<!-- 根据食品药品稽查行政处罚案件ID批量删除食品药品稽查行政处罚案件 -->
+	<delete id="deleteInspectionsById" parameterType="java.util.Map">
+		DELETE FROM
+		FD_INSPECTION
+		WHERE ID IN
+		<foreach item="id" index="index" collection="idArray" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<!-- 根据食品药品稽查行政处罚案件ID查询食品药品稽查行政处罚案件 -->
+	<select id="findInspectionById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from FD_INSPECTION
+		where ID=#{id,jdbcType=BIGINT}
+	</select>
+
+	<!-- 根据食品药品稽查行政处罚案件ID更新食品药品稽查行政处罚案件 -->
+	<update id="updateInspectionById" parameterType="com.soft.common.domain.FdInspection">
+		update
+		FD_INSPECTION
+		set CASE_CODE=#{caseCode,jdbcType=VARCHAR},
+		CASE_NAME=#{caseName,jdbcType=VARCHAR},
+		EXEC_ORG=#{execOrg,jdbcType=VARCHAR},
+		CASE_TYPE=#{caseType,jdbcType=VARCHAR},
+		RELATED_THINGS=#{relatedThings,jdbcType=VARCHAR},
+		CASE_ATTR=#{caseAttr,jdbcType=VARCHAR},
+		CASE_LINK=#{caseLink,jdbcType=VARCHAR},
+		PUNISH_DOC=#{punishDoc,jdbcType=VARCHAR},
+		ORG_NAME=#{orgName,jdbcType=VARCHAR},
+		ORG_CODE=#{orgCode,jdbcType=VARCHAR},
+		ORG_ADDRESS=#{orgAddress,jdbcType=VARCHAR},
+		CORPORATION_NAME=#{corporationName,jdbcType=VARCHAR},
+		LEADER=#{leader,jdbcType=VARCHAR},
+		TAX_INFO=#{taxInfo,jdbcType=VARCHAR},
+		ILLEGAL_FACTS=#{illegalFacts,jdbcType=VARCHAR},
+		PUNISH_KIND=#{punishKind,jdbcType=VARCHAR},
+		PUNISH_EXEC=#{punishExec,jdbcType=VARCHAR},
+		FILING_TIME=#{filingTime,jdbcType=TIMESTAMP},
+		CLOSE_CASE_TIME=#{closeCaseTime,jdbcType=TIMESTAMP},
+		PUNISH_DATE=#{punishDate,jdbcType=TIMESTAMP},
+		CONFISCATE_VALUE=#{confiscateValue,jdbcType=DECIMAL},
+		CASE_AMOUNT=#{caseAmount,jdbcType=DECIMAL},
+		DESTROY_VALUE=#{destroyValue,jdbcType=DECIMAL},
+		FINE=#{fine,jdbcType=DECIMAL},
+		BILL_NO=#{billNo,jdbcType=VARCHAR},
+		PAYMENT_TIME=#{paymentTime,jdbcType=TIMESTAMP},
+		CASE_SOURCE=#{caseSource,jdbcType=VARCHAR},
+		CASE_SOURCE_TIME=#{caseSourceTime,jdbcType=TIMESTAMP},
+		GROUP_NO=#{groupNo,jdbcType=VARCHAR},
+		FILING_YEAR=#{filingYear,jdbcType=VARCHAR},
+		FILING_MONTH=#{filingMonth,jdbcType=VARCHAR},
+		UPDATE_USER=#{updateUser,jdbcType=BIGINT},
+		UPDATE_DATE=#{updateDate,jdbcType=TIMESTAMP}
+		where
+		ID=#{id,jdbcType=BIGINT}
+	</update>
+
+	<!-- 根据查询条件查询食品药品稽查行政处罚案件笔数 -->
+	<select id="getInspectionCount" parameterType="com.soft.common.domain.FdInspection" resultType="java.lang.Integer">
+		SELECT
+		COUNT(ID)
+		FROM FD_INSPECTION
+		WHERE DELETE_SIGN=false
+		<if test="caseCode != null and caseCode != ''">
+			AND CASE_CODE like
+			CONCAT('%',#{caseCode,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="caseType != null and caseType != ''">
+			AND CASE_TYPE = #{caseType,jdbcType=VARCHAR}
+		</if>
+		<if test="caseName != null and caseName != ''">
+			AND CASE_NAME like
+			CONCAT('%',#{caseName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="relatedThings != null and relatedThings != ''">
+			AND RELATED_THINGS = #{relatedThings,jdbcType=VARCHAR}
+		</if>
+		<if test="caseAttr != null and caseAttr != ''">
+			AND CASE_ATTR = #{caseAttr,jdbcType=VARCHAR}
+		</if>
+		<if test="caseLink != null and caseLink != ''">
+			AND CASE_LINK = #{caseLink,jdbcType=VARCHAR}
+		</if>
+		<if test="punishDoc != null and punishDoc != ''">
+			AND PUNISH_DOC like CONCAT('%',#{punishDoc,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="execOrg != null and execOrg != ''">
+			AND EXEC_ORG = #{execOrg,jdbcType=VARCHAR}
+		</if>
+		<if test="filingTime != null and filingTime != ''">
+			AND FILING_TIME = #{filingTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="closeCaseTime != null and closeCaseTime != ''">
+			AND CLOSE_CASE_TIME = #{closeCaseTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="illegalFacts != null and illegalFacts != ''">
+			AND ILLEGAL_FACTS like
+			CONCAT('%',#{illegalFacts,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="punishKind != null and punishKind != ''">
+			AND PUNISH_KIND like
+			CONCAT('%',#{punishKind,jdbcType=VARCHAR},'%')
+		</if>
+	</select>
+
+	<!-- 根据查询条件查询食品药品稽查行政处罚案件列表 -->
+	<select id="getInspectionList" parameterType="java.util.Map" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		,
+		CT.VALUE AS CASE_TYPE_NAME,
+		RT.VALUE AS RELATED_THINGS_NAME,
+		CA.VALUE AS CASE_ATTR_NAME,
+		CL.VALUE AS CASE_LINK_NAME,
+		CS.VALUE AS CASE_SOURCE_NAME,
+		EO.VALUE AS EXEC_ORG_NAME
+		FROM FD_INSPECTION A
+		LEFT JOIN
+		CODE_DATA CT ON A.CASE_TYPE=CT.CODE1 AND CT.TYPE='100'
+		LEFT JOIN CODE_DATA RT ON A.RELATED_THINGS=RT.CODE1 AND RT.TYPE='101'
+		LEFT JOIN CODE_DATA CA ON A.CASE_ATTR=CA.CODE1 AND CA.TYPE='108'
+		LEFT JOIN
+		CODE_DATA CL ON A.CASE_LINK=CL.CODE1 AND CL.TYPE='109'
+		LEFT JOIN CODE_DATA CS ON A.CASE_SOURCE=CS.CODE1 AND CS.TYPE='102'
+		LEFT JOIN CODE_DATA EO ON A.EXEC_ORG=EO.CODE1 AND EO.TYPE='106'
+		WHERE
+		A.DELETE_SIGN=false
+		<if test="record.caseCode != null and record.caseCode != ''">
+			AND CASE_CODE like CONCAT('%',#{record.caseCode,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="record.caseType != null and record.caseType != ''">
+			AND CASE_TYPE = #{record.caseType,jdbcType=VARCHAR}
+		</if>
+		<if test="record.caseName != null and record.caseName != ''">
+			AND CASE_NAME like CONCAT('%',#{record.caseName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="record.relatedThings != null and record.relatedThings != ''">
+			AND RELATED_THINGS = #{record.relatedThings,jdbcType=VARCHAR}
+		</if>
+		<if test="record.caseAttr != null and record.caseAttr != ''">
+			AND CASE_ATTR = #{record.caseAttr,jdbcType=VARCHAR}
+		</if>
+		<if test="record.caseLink != null and record.caseLink != ''">
+			AND CASE_LINK = #{record.caseLink,jdbcType=VARCHAR}
+		</if>
+		<if test="record.punishDoc != null and record.punishDoc != ''">
+			AND PUNISH_DOC like CONCAT('%',#{record.punishDoc,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="record.execOrg != null and record.execOrg != ''">
+			AND EXEC_ORG = #{record.execOrg,jdbcType=VARCHAR}
+		</if>
+		<if test="record.filingTime != null and record.filingTime != ''">
+			AND FILING_TIME = #{record.filingTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="record.closeCaseTime != null and record.closeCaseTime != ''">
+			AND CLOSE_CASE_TIME = #{record.closeCaseTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="record.illegalFacts != null and record.illegalFacts != ''">
+			AND ILLEGAL_FACTS like
+			CONCAT('%',#{record.illegalFacts,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="record.punishKind != null and record.punishKind != ''">
+			AND PUNISH_KIND like
+			CONCAT('%',#{record.punishKind,jdbcType=VARCHAR},'%')
+		</if>
+		ORDER BY A.CREATE_DATE DESC
+		limit
+		#{startIndex}, #{pageSize}
+	</select>
+
+	<!-- 根据食品药品稽查行政处罚案件名称查询食品药品稽查行政处罚案件信息 -->
+	<select id="getInspectionByName" parameterType="com.soft.common.domain.FdInspection" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM FD_INSPECTION
+		WHERE DELETE_SIGN=false
+		AND CASE_NAME=#{caseName,jdbcType=VARCHAR}
+		limit 0,1
+	</select>
+	<!-- 根据立案年份统计案件数量 -->
+	<select id="getInspectionCountByYear" parameterType="java.lang.String" resultMap="BaseResultMap">
+		SELECT
+		RELATED_THINGS, FILING_MONTH,COUNT(ID) AS FILING_COUNT
+		FROM FD_INSPECTION
+		WHERE DELETE_SIGN=false
+		AND FILING_YEAR=#{filingYear,jdbcType=VARCHAR}
+		GROUP BY RELATED_THINGS, FILING_MONTH
+	</select>
+</mapper>

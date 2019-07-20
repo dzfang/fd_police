@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.soft.manager.dao.CodeDataDao">
+	<resultMap id="BaseResultMap" type="com.soft.common.domain.CodeData">
+		<id property="type" column="TYPE" javaType="string" jdbcType="CHAR" />
+		<result property="code1" column="CODE1" javaType="string"
+			jdbcType="VARCHAR" />
+		<result property="code2" column="CODE2" javaType="string"
+			jdbcType="VARCHAR" />
+		<result property="extendValue" column="EXTEND_VALUE" javaType="string"
+			jdbcType="VARCHAR" />
+		<result property="value" column="VALUE" javaType="string"
+			jdbcType="VARCHAR" />
+		<result property="remark" column="REMARK" javaType="string"
+			jdbcType="VARCHAR" />
+		<result property="createUser" column="CREATE_USER" javaType="long"
+			jdbcType="INTEGER" />
+		<result property="createDate" column="CREATE_DATE" javaType="Date"
+			jdbcType="TIMESTAMP" />
+		<result property="updateUser" column="UPDATE_USER" javaType="long"
+			jdbcType="INTEGER" />
+		<result property="updateDate" column="UPDATE_DATE" javaType="Date"
+			jdbcType="TIMESTAMP" />
+		<result column="TYPE_NAME" jdbcType="VARCHAR" property="typeName" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		CODEDATA.TYPE,CODE1,CODE2,EXTEND_VALUE,VALUE,REMARK,CODEDATA.CREATE_USER,CODEDATA.CREATE_DATE,CODEDATA.UPDATE_USER,CODEDATA.UPDATE_DATE
+	</sql>
+	<select id="selectListByType" resultMap="BaseResultMap">
+		SELECT
+		TYPE,CODE1,CODE2,EXTEND_VALUE,VALUE,REMARK,CREATE_USER,CREATE_DATE,UPDATE_USER,UPDATE_DATE
+		FROM CODE_DATA
+		WHERE
+		1=1
+		<!-- 判断TYPE是否为空 -->
+		<if test="type!=null and type!=''">
+			AND TYPE = #{type}
+		</if>
+		<!-- 判断code2是否为空 -->
+		<if test="code2!=null and code2!=''">
+			AND CODE2 = #{code2}
+		</if>
+		<!-- 判断sqlWhere是否为空 -->
+		<if test="sqlWhere!=null and sqlWhere!=''">
+			AND ${sqlWhere}
+		</if>
+		ORDER BY TYPE ASC,CODE1 ASC
+	</select>
+	<!-- 根据查询条件查询系统编码笔数 -->
+	<select id="getCodeListCount" parameterType="com.soft.common.domain.CodeData"
+		resultType="java.lang.Integer">
+		SELECT
+		COUNT(CODEDATA.TYPE)
+		FROM CODE_DATA CODEDATA LEFT JOIN CODE_TYPE
+		CODETYPE ON CODEDATA.TYPE=CODETYPE.TYPE
+		WHERE 1=1
+		<if test="typeName != null and typeName != ''">
+			AND CODETYPE.TEXT LIKE
+			CONCAT('%',#{typeName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="type != null and type != ''">
+			AND CODETYPE.TYPE=#{type,jdbcType=VARCHAR}
+		</if>
+	</select>
+	<!-- 根据查询条件查询系统编码列表 -->
+	<select id="getCodeList" parameterType="java.util.Map"
+		resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		,
+		CODETYPE.TEXT AS TYPE_NAME
+		FROM CODE_DATA CODEDATA LEFT JOIN CODE_TYPE
+		CODETYPE ON CODEDATA.TYPE=CODETYPE.TYPE
+		WHERE 1=1
+		<if test="codeData.typeName != null and codeData.typeName != ''">
+			AND CODETYPE.TEXT LIKE
+			CONCAT('%',#{codeData.typeName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="codeData.type != null and codeData.type != ''">
+			AND CODETYPE.TYPE=
+			#{codeData.type,jdbcType=VARCHAR}
+		</if>
+		limit
+		#{startIndex}, #{pageSize}
+	</select>
+	<insert id="insertCodeData" parameterType="com.soft.common.domain.CodeData">
+		INSERT INTO CODE_DATA
+		(CODE1, TYPE, CODE2,EXTEND_VALUE,
+		VALUE, REMARK, CREATE_USER,
+		CREATE_DATE,
+		UPDATE_USER, UPDATE_DATE
+		)
+		values (#{code1,jdbcType=VARCHAR},
+		#{type,jdbcType=VARCHAR},
+		#{code2,jdbcType=VARCHAR},
+		#{extendValue,jdbcType=VARCHAR},
+		#{value,jdbcType=VARCHAR},
+		#{remark,jdbcType=VARCHAR},
+		#{createUser,jdbcType=BIGINT},
+		#{createDate,jdbcType=TIMESTAMP},
+		#{updateUser,jdbcType=BIGINT},
+		#{updateDate,jdbcType=TIMESTAMP}
+		)
+	</insert>
+	<!-- 根据代码类型和代码1查询 -->
+	<select id="selectCodeData" parameterType="com.soft.common.domain.CodeData"
+		resultMap="BaseResultMap">
+		SELECT
+		CODE_DATA.TYPE,CODE1,CODE2,EXTEND_VALUE,VALUE,REMARK,CODE_TYPE.TEXT AS
+		TYPE_NAME
+		FROM CODE_DATA
+		LEFT JOIN CODE_TYPE
+		ON
+		CODE_DATA.TYPE=CODE_TYPE.TYPE
+		WHERE 1=1
+		<if test="type!= null and type != ''">
+			AND CODE_DATA.TYPE =#{type,jdbcType=VARCHAR}
+		</if>
+		<if test="code1!= null and code1 != ''">
+			AND CODE_DATA.CODE1 =#{code1,jdbcType=VARCHAR}
+		</if>
+	</select>
+	<!-- 根据活动ID批量删除活动信息 -->
+	<delete id="deleteCodeDataByType" parameterType="com.soft.common.domain.CodeData">
+		DELETE FROM
+		CODE_DATA
+		WHERE
+		TYPE=#{type,jdbcType=VARCHAR}
+		<if test="code1!= null and code1 != ''">
+			AND CODE1 =#{code1,jdbcType=VARCHAR}
+		</if>
+	</delete>
+	<update id="updateCodeDataByType" parameterType="com.soft.common.domain.CodeData">
+		UPDATE CODE_DATA
+		SET
+		TYPE = #{type,jdbcType=VARCHAR},
+		CODE1 = #{code1,jdbcType=VARCHAR},
+		EXTEND_VALUE =
+		#{extendValue,jdbcType=VARCHAR},
+		VALUE = #{value,jdbcType=VARCHAR},
+		REMARK = #{remark,jdbcType=VARCHAR},
+		UPDATE_USER =
+		#{updateUser,jdbcType=BIGINT},
+		UPDATE_DATE =
+		#{updateDate,jdbcType=TIMESTAMP}
+		WHERE CODE1 =
+		#{code1,jdbcType=VARCHAR}
+		AND TYPE = #{type,jdbcType=VARCHAR}
+	</update>
+	<update id="updateCodeDatasByType" parameterType="com.soft.common.domain.CodeData">
+		UPDATE
+		CODE_DATA
+		SET
+		VALUE = #{value,jdbcType=VARCHAR},
+		UPDATE_USER =
+		#{updateUser,jdbcType=BIGINT},
+		UPDATE_DATE =
+		#{updateDate,jdbcType=TIMESTAMP},
+		EXTEND_VALUE =
+		#{extendValue,jdbcType=VARCHAR}
+		WHERE CODE1 = #{code1,jdbcType=VARCHAR}
+		AND TYPE = #{type,jdbcType=VARCHAR}
+	</update>
+	<!-- 更新APP服务器状态 -->
+	<update id="updateAppServiceStatus" parameterType="com.soft.common.domain.CodeData">
+		UPDATE
+		CODE_DATA
+		SET
+		VALUE = #{value,jdbcType=VARCHAR},
+		UPDATE_USER =
+		#{updateUser,jdbcType=BIGINT},
+		UPDATE_DATE =
+		#{updateDate,jdbcType=TIMESTAMP}
+		WHERE CODE1 ='999' AND TYPE = '999'
+	</update>
+</mapper>

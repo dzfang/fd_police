@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.soft.manager.dao.FdOrganizationDao">
+	<resultMap id="BaseResultMap" type="com.soft.common.domain.FdOrganization">
+		<id column="ID" property="id" jdbcType="BIGINT" />
+		<result column="ORG_CODE" property="orgCode" jdbcType="VARCHAR" />
+		<result column="ORG_NAME" property="orgName" jdbcType="VARCHAR" />
+		<result column="LICENSE" property="license" jdbcType="VARCHAR" />
+		<result column="ORG_TYPE" property="orgType" jdbcType="VARCHAR" />
+		<result column="QUALIFIED" property="qualified" jdbcType="VARCHAR" />
+		<result column="QUALIFIED_TYPE" property="qualifiedType"
+			jdbcType="VARCHAR" />
+		<result column="CORPORATION_NAME" property="corporationName"
+			jdbcType="VARCHAR" />
+		<result column="DELETE_SIGN" property="deleteSign" jdbcType="BIT" />
+		<result column="VERSION" property="version" jdbcType="TIMESTAMP" />
+		<result column="UPDATE_USER" property="updateUser" jdbcType="BIGINT" />
+		<result column="UPDATE_DATE" property="updateDate" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER" property="createUser" jdbcType="BIGINT" />
+		<result column="CREATE_DATE" property="createDate" jdbcType="TIMESTAMP" />
+
+		<result column="ORG_TYPE_NAME" property="orgTypeName" jdbcType="VARCHAR" />
+		<result column="QUAILFIED_TYPE_NAME" property="qualifiedTypeName"
+			jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, ORG_CODE, ORG_NAME, LICENSE, ORG_TYPE, QUALIFIED,
+		QUALIFIED_TYPE, CORPORATION_NAME
+	</sql>
+
+	<!-- 新增部门信息 -->
+	<insert id="insertOrganization" parameterType="com.soft.common.domain.FdOrganization">
+		INSERT INTO
+		FD_ORGANIZATION (
+		ID, ORG_CODE, ORG_NAME, LICENSE, ORG_TYPE, QUALIFIED,
+		QUALIFIED_TYPE, CORPORATION_NAME, DELETE_SIGN,
+		UPDATE_USER,
+		UPDATE_DATE,CREATE_USER,
+		CREATE_DATE)
+		VALUES (#{id,jdbcType=BIGINT},
+		#{orgCode,jdbcType=VARCHAR},
+		#{orgName,jdbcType=VARCHAR},
+		#{license,jdbcType=VARCHAR},
+		#{orgType,jdbcType=VARCHAR},
+		#{qualified,jdbcType=VARCHAR},
+		#{qualifiedType,jdbcType=VARCHAR},
+		#{corporationName,jdbcType=VARCHAR},
+		#{deleteSign,jdbcType=BIT},
+		#{updateUser,jdbcType=BIGINT},
+		#{updateDate,jdbcType=TIMESTAMP},
+		#{createUser,jdbcType=BIGINT},
+		#{createDate,jdbcType=TIMESTAMP})
+	</insert>
+
+	<!-- 根据部门信息ID批量删除部门信息 -->
+	<delete id="deleteOrganizationsById" parameterType="java.util.Map">
+		UPDATE
+		FD_ORGANIZATION
+		SET
+		DELETE_SIGN = true
+		WHERE ID IN
+		<foreach item="id" index="index" collection="idArray" open="("
+			separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<!-- 根据部门信息ID查询部门信息 -->
+	<select id="findOrganizationById" resultMap="BaseResultMap"
+		parameterType="java.lang.Long">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM FD_ORGANIZATION
+		WHERE ID = #{id,jdbcType=BIGINT}
+	</select>
+
+	<!-- 根据部门信息ID更新部门信息 -->
+	<update id="updateOrganizationById" parameterType="com.soft.common.domain.FdOrganization">
+		UPDATE
+		FD_ORGANIZATION
+		SET
+		ORG_CODE=#{orgCode,jdbcType=VARCHAR},
+		ORG_NAME=#{orgName,jdbcType=VARCHAR},
+		LICENSE=#{license,jdbcType=VARCHAR},
+		ORG_TYPE=#{orgType,jdbcType=VARCHAR},
+		QUALIFIED=#{qualified,jdbcType=VARCHAR},
+		QUALIFIED_TYPE=#{qualifiedType,jdbcType=VARCHAR},
+		CORPORATION_NAME=#{corporationName,jdbcType=VARCHAR},
+		UPDATE_USER=#{updateUser,jdbcType=BIGINT},
+		UPDATE_DATE=#{updateDate,jdbcType=TIMESTAMP}
+		WHERE ID =
+		#{id,jdbcType=BIGINT}
+	</update>
+
+	<!-- 根据查询条件查询部门信息笔数 -->
+	<select id="getOrganizationCount" parameterType="com.soft.common.domain.FdOrganization"
+		resultType="java.lang.Integer">
+		SELECT
+		COUNT(ID)
+		FROM FD_ORGANIZATION
+		WHERE DELETE_SIGN=false
+		<if test="orgCode != null and orgCode != ''">
+			AND ORG_CODE like
+			CONCAT('%',#{orgCode,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="orgName != null and orgName != ''">
+			AND ORG_NAME like
+			CONCAT('%',#{orgName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="license != null and license != ''">
+			AND LICENSE like
+			CONCAT('%',#{license,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="orgType != null and orgType != ''">
+			AND ORG_TYPE =#{orgType,jdbcType=VARCHAR}
+		</if>
+		<if test="qualified != null and qualified != ''">
+			AND QUALIFIED like
+			CONCAT('%',#{qualified,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="qualifiedType != null and qualifiedType != ''">
+			AND QUALIFIED_TYPE
+			=#{qualifiedType,jdbcType=VARCHAR}
+		</if>
+		<if test="corporationName != null and corporationName != ''">
+			AND CORPORATION_NAME like
+			CONCAT('%',#{corporationName,jdbcType=VARCHAR},'%')
+		</if>
+	</select>
+
+	<!-- 根据查询条件查询部门信息列表 -->
+	<select id="getOrganizationList" parameterType="java.util.Map"
+		resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		,OT.VALUE AS ORG_TYPE_NAME
+		,QT.VALUE AS QUAILFIED_TYPE_NAME
+		FROM
+		FD_ORGANIZATION A
+		LEFT JOIN CODE_DATA OT ON A.ORG_TYPE=OT.CODE1 AND
+		OT.TYPE='112'
+		LEFT JOIN CODE_DATA QT ON A.QUALIFIED_TYPE=QT.CODE1 AND
+		QT.TYPE='113'
+		WHERE DELETE_SIGN=false
+		<if test="record.orgCode != null and record.orgCode != ''">
+			AND ORG_CODE like
+			CONCAT('%',#{record.orgCode,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="record.orgName != null and record.orgName != ''">
+			AND ORG_NAME like
+			CONCAT('%',#{record.orgName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="record.license != null and record.license != ''">
+			AND LICENSE like
+			CONCAT('%',#{record.license,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="record.orgType != null and record.orgType != ''">
+			AND ORG_TYPE =#{record.orgType,jdbcType=VARCHAR}
+		</if>
+		<if test="record.qualified != null and record.qualified != ''">
+			AND QUALIFIED like
+			CONCAT('%',#{record.qualified,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="record.qualifiedType != null and record.qualifiedType != ''">
+			AND QUALIFIED_TYPE
+			=#{record.qualifiedType,jdbcType=VARCHAR}
+		</if>
+		<if test="record.corporationName != null and record.corporationName != ''">
+			AND CORPORATION_NAME like
+			CONCAT('%',#{record.corporationName,jdbcType=VARCHAR},'%')
+		</if>
+		ORDER BY A.CREATE_DATE DESC
+		limit
+		#{startIndex}, #{pageSize}
+	</select>
+
+</mapper>

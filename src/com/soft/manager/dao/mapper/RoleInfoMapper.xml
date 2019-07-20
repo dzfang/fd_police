@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.soft.manager.dao.RoleInfoDao">
+	<resultMap id="BaseResultMap" type="com.soft.common.domain.RoleInfo">
+		<id column="ROLE_ID" property="roleId" jdbcType="INTEGER" />
+		<result column="ROLE_NAME" property="roleName" jdbcType="VARCHAR" />
+		<result column="PARENT_ID" property="parentId" jdbcType="INTEGER" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="VERSION" jdbcType="TIMESTAMP" property="version" />
+		<result column="CHILDREN_COUNT" property="childrenCount"
+			jdbcType="INTEGER" />
+	</resultMap>
+
+	<!-- 查询的字段 -->
+	<sql id="Base_Column_List">
+		ROLE_ID, ROLE_NAME, REMARK,VERSION,PARENT_ID
+	</sql>
+
+	<!-- 根据角色ID查询角色信息 -->
+	<select id="findRoleById" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from ROLE_INFO
+		where ROLE_ID = #{roleId,jdbcType=INTEGER}
+	</select>
+
+	<!-- 根据角色ID批量删除角色信息 -->
+	<delete id="deleteRolesById" parameterType="java.util.Map">
+		DELETE FROM
+		ROLE_INFO
+		WHERE ROLE_ID IN
+		<foreach item="id" index="index" collection="idArray" open="("
+			separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<!-- 根据角色名查询角色信息 -->
+	<select id="getRoleInfoByName" parameterType="com.soft.common.domain.RoleInfo"
+		resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM ROLE_INFO
+		WHERE ROLE_NAME =
+		#{roleName,jdbcType=VARCHAR}
+	</select>
+
+	<!-- 添加角色信息 -->
+	<insert id="insertRole" parameterType="com.soft.common.domain.RoleInfo"
+		useGeneratedKeys="true" keyProperty="roleId">
+		INSERT INTO ROLE_INFO
+		(ROLE_NAME,
+		REMARK,PARENT_ID
+		)
+		VALUES
+		(
+		#{roleName,jdbcType=VARCHAR},
+		#{remark,jdbcType=VARCHAR},
+		#{parentId,jdbcType=INTEGER}
+		)
+	</insert>
+
+	<!-- 根据角色ID更新角色信息 -->
+	<update id="updateRoleById" parameterType="com.soft.common.domain.RoleInfo">
+		update ROLE_INFO
+		set
+		ROLE_NAME = #{roleName,jdbcType=VARCHAR},
+		REMARK =
+		#{remark,jdbcType=VARCHAR}
+		where
+		ROLE_ID =
+		#{roleId,jdbcType=INTEGER}
+	</update>
+
+	<!-- 根据查询条件查询角色笔数 -->
+	<select id="getRoleCount" parameterType="com.soft.common.domain.RoleInfo"
+		resultType="java.lang.Integer">
+		SELECT
+		COUNT(ROLE_ID)
+		FROM ROLE_INFO
+		WHERE 1=1
+		<if test="roleName != null and roleName != ''">
+			AND ROLE_NAME like
+			CONCAT('%',#{roleName,jdbcType=VARCHAR},'%')
+		</if>
+
+	</select>
+
+	<!-- 根据查询条件查询角色列表 -->
+	<select id="getRoleList" parameterType="java.util.Map"
+		resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM ROLE_INFO
+		WHERE 1=1
+		<if test="roleInfo.roleName != null and roleInfo.roleName != ''">
+			AND ROLE_NAME like
+			CONCAT('%',#{roleInfo.roleName,jdbcType=VARCHAR},'%')
+		</if>
+		limit
+		#{startIndex}, #{pageSize}
+	</select>
+
+	<!-- 查询所有角色信息 -->
+	<select id="getAllRoles" parameterType="java.util.Map"
+		resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM ROLE_INFO
+	</select>
+	<!-- 根据父节点ID查询角色信息 -->
+	<select id="getRoleByParentId" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		,(SELECT COUNT(1) FROM ROLE_INFO AS ROLE WHERE
+		ROLE.PARENT_ID
+		=ROLE_INFO.ROLE_ID) AS CHILDREN_COUNT
+		FROM ROLE_INFO WHERE
+		PARENT_ID=#{id,jdbcType=INTEGER}
+	</select>
+
+</mapper>

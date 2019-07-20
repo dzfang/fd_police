@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.soft.manager.dao.TMessageDao">
+	<resultMap id="BaseResultMap" type="com.soft.common.domain.TMessage">
+		<id column="ID" property="id" jdbcType="BIGINT" />
+		<result column="ORG_ID" property="orgId" jdbcType="BIGINT" />
+		<result column="MESSAGE_DESC" property="messageDesc" jdbcType="VARCHAR" />
+		<result column="PROCESS_SIGN" property="processSign" jdbcType="BIT" />
+		<result column="CREATE_USER" property="createUser" jdbcType="BIGINT" />
+		<result column="CREATE_DATE" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="DELETE_SIGN" property="deleteSign" jdbcType="BIT" />
+		<result column="RECIVER_DELETE" property="reciverDelete"
+			jdbcType="BIT" />
+		<result column="ORG_NAME" property="orgName" jdbcType="VARCHAR" />
+		<result column="USER_NAME" property="userName" jdbcType="VARCHAR" />
+		<result column="PROCESS_STATUS" property="processStatus"
+			jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		TM.ID, TM.ORG_ID, TM.MESSAGE_DESC, TM.PROCESS_SIGN,
+		TM.CREATE_USER,
+		TM.CREATE_DATE,
+		TM.DELETE_SIGN
+	</sql>
+
+	<!-- 新增消息 -->
+	<insert id="insertMessage" parameterType="com.soft.common.domain.TMessage">
+		insert into T_MESSAGE
+		(ID, ORG_ID, MESSAGE_DESC,
+		PROCESS_SIGN, CREATE_USER, CREATE_DATE,
+		DELETE_SIGN,RECIVER_DELETE)
+		values (#{id,jdbcType=BIGINT},
+		#{orgId,jdbcType=BIGINT},
+		#{messageDesc,jdbcType=VARCHAR},
+		#{processSign,jdbcType=BIT},
+		#{createUser,jdbcType=BIGINT},
+		#{createDate,jdbcType=TIMESTAMP},
+		#{deleteSign,jdbcType=BIT},
+		#{reciverDelete,jdbcType=BIT})
+	</insert>
+
+	<!-- 根据消息ID批量删除消息 -->
+	<update id="deleteMessagesById" parameterType="java.util.Map">
+		UPDATE T_MESSAGE SET DELETE_SIGN=true
+		WHERE ID IN
+		<foreach item="id" index="index" collection="idArray" open="("
+			separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+
+	<!-- 根据消息ID查询消息 -->
+	<select id="findMessageById" resultMap="BaseResultMap"
+		parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from T_MESSAGE
+		where ID = #{id,jdbcType=BIGINT}
+	</select>
+
+	<!-- 根据消息ID更新消息 -->
+	<update id="updateMessageById" parameterType="com.soft.common.domain.TMessage">
+		update T_MESSAGE
+		set ORG_ID = #{orgId,jdbcType=BIGINT},
+		MESSAGE_DESC =
+		#{messageDesc,jdbcType=VARCHAR},
+		PROCESS_SIGN =
+		#{processSign,jdbcType=BIT}
+		where ID = #{id,jdbcType=BIGINT}
+	</update>
+
+	<!-- 根据查询条件查询消息笔数 -->
+	<select id="getMessageCount" parameterType="com.soft.common.domain.TMessage"
+		resultType="java.lang.Integer">
+		SELECT
+		COUNT(TM.ID)
+		FROM T_MESSAGE TM
+		WHERE TM.DELETE_SIGN=false
+		<if test="createUser != null and createUser != ''">
+			AND CREATE_USER =#{createUser,jdbcType=BIGINT}
+		</if>
+		<if test="processSign != null and processSign != ''">
+			AND PROCESS_SIGN = #{processSign,jdbcType=BIT}
+		</if>
+		<if test="createDate != null and createDate != ''">
+			AND TM.CREATE_DATE >=
+			#{createDate,jdbcType=TIMESTAMP}
+			AND <![CDATA[ TM.CREATE_DATE < date_add(#{createDate,jdbcType=TIMESTAMP}, interval 1 day)]]>
+		</if>
+		<if test="reciverDelete != null">
+			AND RECIVER_DELETE = #{reciverDelete,jdbcType=BIT}
+		</if>
+		<if test="orgIds != null and orgIds != ''">
+			AND TM.ORG_ID IN (${orgIds})
+		</if>
+	</select>
+
+	<!-- 根据查询条件查询消息列表 -->
+	<select id="getMessageList" parameterType="java.util.Map"
+		resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		,ORG_NAME,USER_NAME,CASE WHEN PROCESS_SIGN THEN '已处理' ELSE '未处理' END
+		AS PROCESS_STATUS
+		FROM T_MESSAGE TM
+		LEFT JOIN USER_INFO ON
+		TM.CREATE_USER=USER_ID
+		LEFT JOIN T_ORGANIZATION ON
+		TM.ORG_ID=T_ORGANIZATION.ID
+		WHERE TM.DELETE_SIGN='0'
+		<if test="record.createUser != null and record.createUser != ''">
+			AND TM.CREATE_USER
+			=#{record.createUser,jdbcType=BIGINT}
+		</if>
+		<if test="record.processSign != null">
+			AND PROCESS_SIGN = #{record.processSign,jdbcType=BIT}
+		</if>
+		<if test="record.createDate != null and record.createDate != ''">
+			AND TM.CREATE_DATE >=
+			#{record.createDate,jdbcType=TIMESTAMP}
+			AND <![CDATA[ TM.CREATE_DATE < date_add(#{record.createDate,jdbcType=TIMESTAMP}, interval 1 day)]]>
+		</if>
+		<if test="record.reciverDelete != null">
+			AND RECIVER_DELETE = #{record.reciverDelete,jdbcType=BIT}
+		</if>
+		<if test="record.orgIds != null and record.orgIds != ''">
+			AND TM.ORG_ID IN (${record.orgIds})
+		</if>
+		ORDER BY TM.CREATE_DATE DESC
+		limit
+		#{startIndex}, #{pageSize}
+	</select>
+
+	<!-- 根据消息ID处理后批量更新消息状态 -->
+	<update id="updateMessagesAfterRead" parameterType="java.util.Map">
+		UPDATE T_MESSAGE SET PROCESS_SIGN=true
+		WHERE ID IN
+		<foreach item="id" index="index" collection="idArray" open="("
+			separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+
+	<!-- 收件人删除收件箱中的消息 -->
+	<update id="updateMessagesByReciver" parameterType="java.util.Map">
+		UPDATE T_MESSAGE SET RECIVER_DELETE=true
+		WHERE ID IN
+		<foreach item="id" index="index" collection="idArray" open="("
+			separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+</mapper>

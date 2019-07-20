@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.soft.manager.dao.FdDocumentDao">
+	<resultMap id="BaseResultMap" type="com.soft.common.domain.FdDocument">
+		<id column="ID" property="id" jdbcType="BIGINT" />
+		<result column="FILE_NAME" property="fileName" jdbcType="VARCHAR" />
+		<result column="FILE_SIZE" property="fileSize" jdbcType="VARCHAR" />
+		<result column="CREATE_USER" property="createUser" jdbcType="BIGINT" />
+		<result column="CREATE_DATE" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="USER_NAME" property="userName" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		A.ID, A.FILE_NAME, A.FILE_SIZE, A.CREATE_USER, A.CREATE_DATE
+	</sql>
+
+	<!-- 新增文档信息 -->
+	<insert id="insertDocument" parameterType="com.soft.common.domain.FdDocument" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO
+		FD_DOCUMENT (ID, FILE_NAME, FILE_SIZE,
+		CREATE_USER,
+		CREATE_DATE)
+		VALUES
+		(#{id,jdbcType=BIGINT},
+		#{fileName,jdbcType=VARCHAR},
+		#{fileSize,jdbcType=VARCHAR},
+		#{createUser,jdbcType=BIGINT},
+		#{createDate,jdbcType=TIMESTAMP})
+	</insert>
+
+	<!-- 根据文档信息ID批量删除文档信息 -->
+	<delete id="deleteDocumentsById" parameterType="java.util.Map">
+		DELETE FROM
+		FD_DOCUMENT
+		WHERE ID IN
+		<foreach item="id" index="index" collection="idArray" open="("
+			separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<!-- 根据文档信息ID查询文档信息 -->
+	<select id="findDocumentById" resultMap="BaseResultMap"
+		parameterType="java.lang.Long">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM FD_DOCUMENT A
+		WHERE ID = #{id,jdbcType=BIGINT}
+	</select>
+
+	<!-- 根据查询条件查询文档信息笔数 -->
+	<select id="getDocumentCount" parameterType="com.soft.common.domain.FdDocument"
+		resultType="java.lang.Integer">
+		SELECT
+		COUNT(ID)
+		FROM FD_DOCUMENT A
+		WHERE 1 = 1
+		<if test="fileName != null and fileName != ''">
+			AND FILE_NAME like
+			CONCAT('%',#{fileName,jdbcType=VARCHAR},'%')
+		</if>
+	</select>
+
+	<!-- 根据查询条件查询文档信息列表 -->
+	<select id="getDocumentList" parameterType="java.util.Map"
+		resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		,B.USER_NAME
+		FROM FD_DOCUMENT A
+		LEFT JOIN USER_INFO B 
+		ON A.CREATE_USER = B.USER_ID
+		WHERE 1 = 1
+		<if test="record.fileName != null and record.fileName != ''">
+			AND FILE_NAME like
+			CONCAT('%',#{record.fileName,jdbcType=VARCHAR},'%')
+		</if>
+		ORDER BY A.CREATE_DATE DESC
+		limit
+		#{startIndex}, #{pageSize}
+	</select>
+	 
+</mapper>

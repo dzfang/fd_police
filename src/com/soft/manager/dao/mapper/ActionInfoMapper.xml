@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.soft.manager.dao.ActionInfoDao">
+	<resultMap id="BaseResultMap" type="com.soft.common.domain.ActionInfo">
+		<id column="ACTION_ID" property="actionId" jdbcType="VARCHAR" />
+		<result column="MENU_ID" property="menuId" jdbcType="INTEGER" />
+		<result column="ACTION_NAME" property="actionName" jdbcType="VARCHAR" />
+		<result column="URL" property="url" jdbcType="VARCHAR" />
+		<result column="IS_CHECKED" property="isChecked" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ACTION_INFO.ACTION_ID, ACTION_INFO.MENU_ID, ACTION_NAME,
+		ACTION_INFO.URL
+	</sql>
+	<select id="getActionInfoList" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		SELECT
+		<include refid="Base_Column_List" />
+		,CASE WHEN ROLE_MENU.ROLE_ID IS NULL THEN '0' ELSE '1' END AS
+		IS_CHECKED
+		FROM ACTION_INFO
+		LEFT JOIN ROLE_MENU ON
+		ACTION_INFO.MENU_ID=ROLE_MENU.MENU_ID AND
+		ACTION_INFO.ACTION_ID=ROLE_MENU.ACTION_ID AND
+		ROLE_MENU.ROLE_ID=#{roleId,jdbcType=INTEGER}
+		WHERE ACTION_INFO.MENU_ID
+		= #{menuId,jdbcType=INTEGER}
+	</select>
+	<!-- 查询角色所能分配的请求动作 -->
+	<select id="getAllocActionInfoList" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		SELECT DISTINCT
+		<include refid="Base_Column_List" />
+		,CASE WHEN (SELECT COUNT(*) FROM ROLE_MENU A WHERE
+		A.ROLE_ID=#{roleId,jdbcType=INTEGER} AND A.MENU_ID=ROLE_MENU.MENU_ID
+		AND A.ACTION_ID = ROLE_MENU.ACTION_ID)=0  THEN '0' ELSE '1' END AS
+		IS_CHECKED FROM ACTION_INFO
+		LEFT JOIN ALLOCATE_MENU ON
+		ACTION_INFO.ACTION_ID=ALLOCATE_MENU.ACTION_ID AND ALLOCATE_MENU.MENU_ID=ACTION_INFO.MENU_ID 
+		LEFT JOIN ROLE_MENU
+		ON
+		ALLOCATE_MENU.MENU_ID = ROLE_MENU.MENU_ID AND
+		ROLE_MENU.ROLE_ID=#{roleId,jdbcType=INTEGER} AND
+		ALLOCATE_MENU.ACTION_ID=ROLE_MENU.ACTION_ID
+		LEFT JOIN ROLE_INFO ON
+		ROLE_INFO.ROLE_ID=ROLE_MENU.ROLE_ID
+		WHERE
+		ALLOCATE_MENU.ROLE_ID=
+		#{currtRoleId,jdbcType=INTEGER}
+		AND
+		ALLOCATE_MENU.MENU_ID=#{menuId,jdbcType=INTEGER}
+		AND ALLOCATE_MENU.ACTION_ID!=''
+		ORDER
+		BY
+		ACTION_INFO.ACTION_ID
+		ASC
+	</select>
+</mapper>

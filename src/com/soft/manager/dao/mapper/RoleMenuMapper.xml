@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.soft.manager.dao.RoleMenuDao">
+	<resultMap id="BaseResultMap" type="com.soft.common.domain.RoleMenu">
+		<id column="MENU_ID" property="menuId" jdbcType="INTEGER" />
+		<id column="ROLE_ID" property="roleId" jdbcType="INTEGER" />
+		<id column="USER_ID" property="userId" jdbcType="INTEGER" />
+		<id column="MENU_NAME" property="menuName" jdbcType="VARCHAR" />
+		<id column="ACTION_ID" property="actionId" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ROLE_MENU.MENU_ID, ROLE_ID,ACTION_ID
+	</sql>
+	<select id="getMenuListByRoleId" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM ROLE_MENU WHERE ROLE_ID=#{roleId}
+	</select>
+
+	<!-- 根据角色ID批量删除角色授权信息 -->
+	<delete id="deleteRoleMenusByRoleId" parameterType="java.util.Map">
+		DELETE FROM
+		ROLE_MENU
+		WHERE ROLE_ID IN
+		<foreach item="id" index="index" collection="idArray" open="("
+			separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<!-- 添加角色授权信息 -->
+	<insert id="insertRoleMenu" parameterType="com.soft.common.domain.RoleMenu">
+		INSERT INTO ROLE_MENU
+		(ROLE_ID, MENU_ID,ACTION_ID
+		)
+		VALUES
+		(
+		#{roleId,jdbcType=INTEGER},
+		#{menuId,jdbcType=INTEGER},
+		#{actionId,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<!-- 根据当前登录用户的角色查询子菜单信息 -->
+	<select id="getSubmenuByRoleId" resultMap="BaseResultMap"
+		parameterType="com.soft.common.domain.RoleMenu">
+		SELECT
+		<include refid="Base_Column_List" />
+		,MENU_NAME
+		,USER_ID
+		FROM MENU_INFO
+		INNER JOIN ROLE_MENU ON
+		MENU_INFO.MENU_ID=ROLE_MENU.MENU_ID
+		LEFT JOIN (SELECT MENU_ID,USER_ID
+		FROM
+		MENU_PERSONAL WHERE USER_ID=#{userId,jdbcType=INTEGER})
+		MENU_PERSONAL ON
+		ROLE_MENU.MENU_ID=MENU_PERSONAL.MENU_ID
+		WHERE
+		ROLE_MENU.ROLE_ID=#{roleId,jdbcType=INTEGER}
+		AND PARENT_ID IS NOT NULL AND ACTION_ID=''
+		ORDER BY
+		ROLE_MENU.MENU_ID
+		ASC,SORT_NO ASC
+	</select>
+
+	<!-- 根据用户ID删除用户快捷菜单 -->
+	<delete id="deletePersonalMenuByUserId" parameterType="java.lang.Integer">
+		DELETE
+		FROM
+		MENU_PERSONAL
+		WHERE USER_ID=#{userId,jdbcType=INTEGER}
+	</delete>
+
+	<!-- 添加用户快捷菜单 -->
+	<insert id="insertPersonalMenu" parameterType="java.util.Map">
+		INSERT INTO
+		MENU_PERSONAL
+		(USER_ID, MENU_ID
+		)
+		VALUES
+		<foreach item="id" index="index" collection="idArray"
+			separator=",">
+			(#{userId,jdbcType=INTEGER},
+			#{id,jdbcType=INTEGER})
+		</foreach>
+	</insert>
+
+	<!-- 添加角色授权信息 -->
+	<insert id="insertAllocateMenu" parameterType="com.soft.common.domain.RoleMenu">
+		INSERT INTO
+		ALLOCATE_MENU
+		(ROLE_ID, MENU_ID,ACTION_ID
+		)
+		VALUES
+		(
+		#{roleId,jdbcType=INTEGER},
+		#{menuId,jdbcType=INTEGER},
+		#{actionId,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<!-- 根据角色ID删除该角色可分配的菜单信息 -->
+	<delete id="deleteAllocateMenu" parameterType="java.util.Map">
+		DELETE FROM
+		ALLOCATE_MENU
+		WHERE ROLE_ID IN
+		<foreach item="id" index="index" collection="idArray" open="("
+			separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<select id="getMenuListByMenuIdAndRoleId" resultMap="BaseResultMap"
+		parameterType="com.soft.common.domain.RoleMenu">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM ROLE_MENU WHERE ROLE_ID=#{roleId} AND MENU_ID=#{menuId} AND ACTION_ID!=''
+	</select>
+</mapper>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.soft.manager.dao.TOrganizationDao">
+	<resultMap id="BaseResultMap" type="com.soft.common.domain.TOrganization">
+		<id column="ID" property="id" jdbcType="BIGINT" />
+		<result column="ORG_NAME" property="orgName" jdbcType="VARCHAR" />
+		<result column="PARENT_ID" property="parentId" jdbcType="BIGINT" />
+		<result column="DELETE_SIGN" property="deleteSign" jdbcType="BIT" />
+		<result column="CREATE_USER" property="createUser" jdbcType="BIGINT" />
+		<result column="CREATE_DATE" property="createDate" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, ORG_NAME, PARENT_ID, CREATE_USER, CREATE_DATE
+	</sql>
+
+	<!-- 新增部门信息 -->
+	<insert id="insertOrganization" parameterType="com.soft.common.domain.TOrganization">
+		INSERT INTO
+		T_ORGANIZATION (ID, ORG_NAME, PARENT_ID,DELETE_SIGN,
+		CREATE_USER,
+		CREATE_DATE)
+		VALUES (#{id,jdbcType=BIGINT},
+		#{orgName,jdbcType=VARCHAR},
+		#{parentId,jdbcType=BIGINT},
+		#{deleteSign,jdbcType=BIT},
+		#{createUser,jdbcType=BIGINT},
+		#{createDate,jdbcType=TIMESTAMP})
+	</insert>
+
+	<!-- 根据部门信息ID批量删除部门信息 -->
+	<delete id="deleteOrganizationsById" parameterType="java.util.Map">
+		UPDATE
+		T_ORGANIZATION
+		SET
+		DELETE_SIGN = true 
+		WHERE ID IN
+		<foreach item="id" index="index" collection="idArray" open="("
+			separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<!-- 根据部门信息ID查询部门信息 -->
+	<select id="findOrganizationById" resultMap="BaseResultMap"
+		parameterType="java.lang.Long">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM T_ORGANIZATION
+		WHERE ID = #{id,jdbcType=BIGINT}
+	</select>
+
+	<!-- 根据部门信息ID更新部门信息 -->
+	<update id="updateOrganizationById" parameterType="com.soft.common.domain.TOrganization">
+		UPDATE
+		T_ORGANIZATION
+		SET ORG_NAME = #{orgName,jdbcType=VARCHAR},
+		PARENT_ID =
+		#{parentId,jdbcType=BIGINT}
+		WHERE ID = #{id,jdbcType=BIGINT}
+	</update>
+
+	<!-- 根据查询条件查询部门信息笔数 -->
+	<select id="getOrganizationCount" parameterType="com.soft.common.domain.TOrganization"
+		resultType="java.lang.Integer">
+		SELECT
+		COUNT(ID)
+		FROM T_ORGANIZATION
+		WHERE DELETE_SIGN=false
+		<if test="orgName != null and orgName != ''">
+			AND ORG_NAME like
+			CONCAT('%',#{orgName,jdbcType=VARCHAR},'%')
+		</if>
+	</select>
+
+	<!-- 根据查询条件查询部门信息列表 -->
+	<select id="getOrganizationList" parameterType="java.util.Map"
+		resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM T_ORGANIZATION
+		WHERE DELETE_SIGN=false
+		<if test="record.orgName != null and record.orgName != ''">
+			AND ORG_NAME like
+			CONCAT('%',#{record.orgName,jdbcType=VARCHAR},'%')
+		</if>
+
+		ORDER BY CREATE_DATE DESC
+		limit
+		#{startIndex}, #{pageSize}
+	</select>
+	<!-- 根据所有部门信息列表 -->
+	<select id="getAllOrganization" parameterType="java.util.Map"
+		resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM T_ORGANIZATION
+		WHERE DELETE_SIGN=false
+	</select>
+</mapper>

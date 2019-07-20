@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.soft.manager.dao.FdRelatedPersonDao">
+	<resultMap id="BaseResultMap" type="com.soft.common.domain.FdRelatedPerson">
+		<id column="ID" property="id" jdbcType="BIGINT" />
+		<result column="CASE_ID" property="caseId" jdbcType="BIGINT" />
+		<result column="NAME" property="name" jdbcType="VARCHAR" />
+		<result column="AGE" property="age" jdbcType="INTEGER" />
+		<result column="GENDER" property="gender" jdbcType="VARCHAR" />
+		<result column="BIRTHDAY" property="birthday" jdbcType="TIMESTAMP" />
+		<result column="ID_CARD" property="idCard" jdbcType="VARCHAR" />
+		<result column="ADDRESS" property="address" jdbcType="VARCHAR" />
+		<result column="RELATED_KIND" property="relatedKind" jdbcType="VARCHAR" />
+		<result column="PLEDGE_TYPE" property="pledgeType" jdbcType="VARCHAR" />
+		<!--扩展字段 -->
+		<!-- <result column="GENDER_NAME" property="genderName" jdbcType="VARCHAR" />
+		<result column="RELATED_KIND_NAME" property="relatedKindName" jdbcType="VARCHAR" />
+		<result column="PLEDGE_TYPE_NAME" property="pledgeTypeName" jdbcType="VARCHAR" /> -->
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID,CASE_ID,NAME,AGE,GENDER,BIRTHDAY,ID_CARD,ADDRESS,RELATED_KIND,PLEDGE_TYPE
+	</sql>
+
+	<!-- 新增食品药品犯罪侦查案件 -->
+	<insert id="insertRelatedPerson" parameterType="com.soft.common.domain.FdRelatedPerson">
+		insert into
+		FD_RELATED_PERSON (ID,CASE_ID,NAME,AGE,GENDER,BIRTHDAY,ID_CARD,ADDRESS,RELATED_KIND,
+		PLEDGE_TYPE,UPDATE_USER,UPDATE_DATE,CREATE_USER,
+		CREATE_DATE
+		)
+		values (#{id,jdbcType=BIGINT},
+		#{caseId,jdbcType=BIGINT},
+		#{name,jdbcType=VARCHAR},
+		#{age,jdbcType=INTEGER},
+		#{gender,jdbcType=VARCHAR},
+		#{birthday,jdbcType=TIMESTAMP},
+		#{idCard,jdbcType=VARCHAR},
+		#{address,jdbcType=VARCHAR},
+		#{relatedKind,jdbcType=VARCHAR},
+		#{pledgeType,jdbcType=VARCHAR},
+		#{updateUser,jdbcType=BIGINT},
+		#{updateDate,jdbcType=TIMESTAMP},
+		#{createUser,jdbcType=BIGINT},
+		#{createDate,jdbcType=TIMESTAMP}
+		)
+	</insert>
+	
+	<!-- 根据案件ID批量删除关联人员 -->
+	<delete id="deleteRelatedPersonByCaseId" parameterType="java.lang.Long">
+		DELETE FROM
+		FD_RELATED_PERSON
+		WHERE CASE_ID=#{caseId,jdbcType=BIGINT}
+	</delete>
+	
+	<!-- 根据食品药品犯罪侦查案件ID批量删除食品药品犯罪侦查案件 -->
+	<!-- <delete id="deleteRelatedPersonsById" parameterType="java.util.Map">
+		DELETE FROM
+		FD_RELATED_PERSON
+		WHERE ID IN
+		<foreach item="id" index="index" collection="idArray" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete> -->
+
+	<!-- 根据食品药品犯罪侦查案件ID查询食品药品犯罪侦查案件 -->
+	<!-- <select id="findRelatedPersonById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from FD_RELATED_PERSON
+		where ID=#{id,jdbcType=BIGINT}
+	</select> -->
+
+	<!-- 根据食品药品犯罪侦查案件ID查询食品药品犯罪侦查案件 -->
+	<!-- <select id="findRelatedPersonByIdCard" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from FD_RELATED_PERSON
+		where ID_CARD=#{idCard,jdbcType=VARCHAR}
+	</select> -->
+
+
+	<!-- 根据食品药品犯罪侦查案件ID更新食品药品犯罪侦查案件 -->
+<!-- 	<update id="updateRelatedPersonById" parameterType="com.soft.common.domain.FdRelatedPerson">
+		update
+		FD_RELATED_PERSON
+		set NAME=#{name,jdbcType=VARCHAR},
+		AGE=#{age,jdbcType=VARCHAR},
+		GENDER=#{gender,jdbcType=VARCHAR},
+		BIRTHDAY=#{birthday,jdbcType=VARCHAR},
+		ID_CARD=#{idCard,jdbcType=VARCHAR},
+		ADDRESS=#{address,jdbcType=VARCHAR},
+		RELATED_KIND=#{relatedKind,jdbcType=VARCHAR},
+		PLEDGE_TYPE=#{pledgeType,jdbcType=VARCHAR},
+		UPDATE_USER=#{updateUser,jdbcType=BIGINT},
+		UPDATE_DATE=#{updateDate,jdbcType=TIMESTAMP}
+		where ID=#{id,jdbcType=BIGINT}
+	</update> -->
+
+	<!-- 根据案件ID查询相关人员 -->
+	<select id="getRelatedPersonByCaseId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM FD_RELATED_PERSON A
+		WHERE CASE_ID = #{caseId,jdbcType=VARCHAR}
+		ORDER BY A.ID ASC
+	</select>
+
+</mapper>

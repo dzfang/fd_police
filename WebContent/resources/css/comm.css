@@ -1,0 +1,20 @@
+input.textbox{height: 35px!important; line-height: 35px!important;width:200px;padding-left:9px;}
+input.textbox-text{height: 35px!important; line-height: 35px!important;padding-left:9px;}
+span.datebox{height: 35px!important; line-height: 35px!important ;width:200px;}
+a.textbox-icon{height: 35px!important; line-height: 35px!important ;}
+span.combo{height: 35px!important; line-height: 35px!important ;width:200px;}
+input.easyui-textbox{height: 35px!important; line-height: 35px!important;width:200px;padding-left:9px;}
+a.btn-sm{height:25px!important;display: inline-block;
+    cursor: pointer;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 25px;
+    text-decoration: none;
+    overflow: hidden;
+    margin: 0px;
+    padding: 0px 10px;
+    outline: none;
+    border-radius: 3px 3px 3px 3px;
+    }
+a.l-btn-danger{background:red;filter:none;color:#fff;border:1px solid red}
+span.textbox{height: 35px!important; line-height: 35px!important ;}

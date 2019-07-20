@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.soft.manager.dao.UserInfoDao">
+	<resultMap id="BaseResultMap" type="com.soft.common.domain.UserInfo">
+		<id column="USER_ID" jdbcType="BIGINT" property="userId" />
+		<result column="LOGIN_ID" jdbcType="VARCHAR" property="loginId" />
+		<result column="USER_NAME" jdbcType="VARCHAR" property="userName" />
+		<result column="PASSWORD" jdbcType="VARCHAR" property="password" />
+		<result column="TELEPHONE" jdbcType="VARCHAR" property="telephone" />
+		<result column="EMAIL" jdbcType="VARCHAR" property="email" />
+		<result column="ADDRESS" jdbcType="VARCHAR" property="address" />
+		<result column="USER_STATUS" jdbcType="VARCHAR" property="userStatus" />
+		<result column="USER_SEX" jdbcType="VARCHAR" property="userSex" />
+		<result column="USER_TYPE" jdbcType="VARCHAR" property="userType" />
+		<result column="LOGIN_TIME" jdbcType="TIMESTAMP" property="loginTime" />
+		<result column="CREATE_USER" jdbcType="BIGINT" property="createUser" />
+		<result column="CREATE_DATE" jdbcType="TIMESTAMP" property="createDate" />
+		<result column="UPDATE_USER" jdbcType="BIGINT" property="updateUser" />
+		<result column="UPDATE_DATE" jdbcType="TIMESTAMP" property="updateDate" />
+		<result column="STATUS_NAME" jdbcType="VARCHAR" property="statusName" />
+		<result column="SEX_NAME" jdbcType="VARCHAR" property="sexName" />
+		<result column="ROLE_ID" jdbcType="INTEGER" property="roleId" />
+		<result column="ROLE_NAME" jdbcType="VARCHAR" property="roleName" />
+		<result column="BIRTHDAY" jdbcType="TIMESTAMP" property="birthday" />
+		<result column="ID_CARD" jdbcType="VARCHAR" property="idCard" />
+		<result column="ORG_ID" jdbcType="BIGINT" property="orgId" />
+		<result column="ORG_NAME" jdbcType="VARCHAR" property="orgName" />
+		<result column="PARENT_ID" jdbcType="VARCHAR" property="roleParentId" />
+		<result column="PROFESSION" jdbcType="VARCHAR" property="profession" />
+		<result column="PROFESSION_NAME" jdbcType="VARCHAR" property="professionName" />
+	</resultMap>
+	<!-- 需要查询的公共字段 -->
+	<sql id="Base_Column_List">
+		USER_INFO.USER_ID, LOGIN_ID, USER_NAME, PASSWORD,
+		TELEPHONE, EMAIL,ADDRESS,USER_STATUS, USER_SEX,
+		LOGIN_TIME, ORG_ID,
+		USER_TYPE,
+		BIRTHDAY, ID_CARD,
+		USER_INFO.CREATE_USER,
+		USER_INFO.CREATE_DATE,
+		USER_INFO.UPDATE_USER,
+		USER_INFO.UPDATE_DATE,
+		PROFESSION
+	</sql>
+	<!-- 登录验证 -->
+	<select id="doLogin" parameterType="com.soft.common.domain.UserInfo"
+		resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		,USER_ROLE.ROLE_ID,ROLE_INFO.PARENT_ID
+		FROM USER_INFO
+		LEFT JOIN
+		USER_ROLE ON
+		USER_INFO.USER_ID=USER_ROLE.USER_ID
+		LEFT JOIN ROLE_INFO ON
+		USER_ROLE.ROLE_ID=ROLE_INFO.ROLE_ID
+		WHERE USER_INFO.LOGIN_ID =
+		#{loginId,jdbcType=VARCHAR}
+		AND
+		PASSWORD=#{password,jdbcType=VARCHAR}
+	</select>
+
+	<select id="getChildList" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		SELECT getChildList(#{roleId,jdbcType=VARCHAR}) ID
+	</select>
+
+	<!-- 根据用户ID查询用户信息 -->
+	<select id="findUserById" parameterType="java.lang.Long"
+		resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		,USER_ROLE.ROLE_ID,ROLE_NAME
+		FROM USER_INFO
+		LEFT JOIN USER_ROLE ON
+		USER_INFO.USER_ID=USER_ROLE.USER_ID
+		LEFT JOIN ROLE_INFO ON
+		USER_ROLE.ROLE_ID=ROLE_INFO.ROLE_ID
+		WHERE
+		USER_INFO.USER_ID =
+		#{userId,jdbcType=BIGINT}
+	</select>
+	<!-- 根据用户ID批量删除用户信息 -->
+	<delete id="deleteUsersById" parameterType="java.util.Map">
+		DELETE FROM
+		USER_INFO
+		WHERE USER_ID IN
+		<foreach item="id" index="index" collection="idArray" open="("
+			separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<!-- 根据用户名查询用户笔数 -->
+	<select id="getUserCountByLoginId" parameterType="com.soft.common.domain.UserInfo"
+		resultType="java.lang.Integer">
+		SELECT
+		COUNT(USER_ID)
+		FROM USER_INFO
+		WHERE LOGIN_ID =
+		#{loginId,jdbcType=VARCHAR}
+	</select>
+
+	<!-- 添加用户信息 -->
+	<insert id="insertUser" parameterType="com.soft.common.domain.UserInfo"
+		useGeneratedKeys="true" keyProperty="userId">
+		INSERT INTO USER_INFO
+		(USER_ID,
+		LOGIN_ID, USER_NAME,USER_TYPE,
+		PASSWORD, TELEPHONE, EMAIL,
+		ADDRESS,
+		USER_STATUS, USER_SEX,BIRTHDAY,ID_CARD,ORG_ID,
+		LOGIN_TIME,
+		CREATE_USER, CREATE_DATE,
+		UPDATE_USER,
+		UPDATE_DATE,PROFESSION)
+		VALUES
+		(#{userId,jdbcType=INTEGER},
+		#{loginId,jdbcType=VARCHAR},
+		#{userName,jdbcType=VARCHAR},
+		#{userType,jdbcType=VARCHAR},
+		#{password,jdbcType=VARCHAR},
+		#{telephone,jdbcType=CHAR},
+		#{email,jdbcType=VARCHAR},
+		#{address,jdbcType=VARCHAR},
+		#{userStatus,jdbcType=VARCHAR},
+		#{userSex,jdbcType=VARCHAR},
+		#{birthday,jdbcType=TIMESTAMP},
+		#{idCard,jdbcType=VARCHAR},
+		#{orgId,jdbcType=BIGINT},
+		#{loginTime,jdbcType=TIMESTAMP},
+		#{createUser,jdbcType=BIGINT},
+		#{createDate,jdbcType=TIMESTAMP},
+		#{updateUser,jdbcType=BIGINT},
+		#{updateDate,jdbcType=TIMESTAMP},
+		#{profession,jdbcType=VARCHAR})
+	</insert>
+
+	<!-- 根据用户名查询用户信息 -->
+	<select id="getUserByLoginId" parameterType="com.soft.common.domain.UserInfo"
+		resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM USER_INFO
+		WHERE LOGIN_ID =
+		#{loginId,jdbcType=VARCHAR}
+	</select>
+
+	<!-- 根据用户ID更新用户信息 -->
+	<update id="updateUserById" parameterType="com.soft.common.domain.UserInfo">
+		UPDATE USER_INFO
+		SET
+		LOGIN_ID=#{loginId,jdbcType=VARCHAR},
+		USER_NAME=#{userName,jdbcType=VARCHAR},
+		TELEPHONE=#{telephone,jdbcType=VARCHAR},
+		EMAIL=#{email,jdbcType=VARCHAR},
+		ADDRESS=#{address,jdbcType=VARCHAR},
+		USER_STATUS=#{userStatus,jdbcType=VARCHAR},
+		USER_SEX=#{userSex,jdbcType=VARCHAR},
+		BIRTHDAY=#{birthday,jdbcType=TIMESTAMP},
+		ID_CARD=#{idCard,jdbcType=VARCHAR},
+		ORG_ID=#{orgId,jdbcType=BIGINT},
+		UPDATE_USER=#{updateUser,jdbcType=BIGINT},
+		UPDATE_DATE=#{updateDate,jdbcType=TIMESTAMP},
+		PROFESSION=#{profession,jdbcType=VARCHAR}
+		WHERE
+		USER_ID=#{userId,jdbcType=BIGINT}
+	</update>
+
+	<!-- 根据查询条件查询用户笔数 -->
+	<select id="getUserCount" parameterType="com.soft.common.domain.UserInfo"
+		resultType="java.lang.Integer">
+		SELECT
+		COUNT(USER_INFO.USER_ID)
+		FROM USER_INFO
+		LEFT JOIN USER_ROLE ON
+		USER_INFO.USER_ID=USER_ROLE.USER_ID
+		WHERE 1=1
+		<if test="userType != null and userType != ''">
+			AND USER_TYPE =
+			#{userType,jdbcType=VARCHAR}
+		</if>
+		<if test="loginId != null and loginId != ''">
+			AND LOGIN_ID like
+			CONCAT('%',#{loginId,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="userName != null and userName != ''">
+			AND USER_NAME like
+			CONCAT('%',#{userName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="telephone != null and telephone != ''">
+			AND TELEPHONE like
+			CONCAT('%',#{telephone,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="orgId != null and orgId != ''">
+			AND ORG_ID = #{orgId,jdbcType=BIGINT}
+		</if>
+		<if test="roleId != null and roleId != ''">
+			AND ROLE_ID = #{roleId,jdbcType=INTEGER}
+		</if>
+		<if test="userStatus != null and userStatus != ''">
+			AND USER_STATUS = #{userStatus,jdbcType=VARCHAR}
+		</if>
+	</select>
+
+	<!-- 根据查询条件查询用户列表 -->
+	<select id="getUserList" parameterType="java.util.Map"
+		resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		,SEX.VALUE AS SEX_NAME
+		,STATUS.VALUE AS STATUS_NAME
+		,ORG_NAME,ROLE_NAME,USER_ROLE.ROLE_ID
+		,PROFE.VALUE AS PROFESSION_NAME
+		FROM USER_INFO
+		LEFT JOIN USER_ROLE
+		ON
+		USER_INFO.USER_ID=USER_ROLE.USER_ID
+		LEFT JOIN
+		ROLE_INFO ON
+		USER_ROLE.ROLE_ID=ROLE_INFO.ROLE_ID
+		LEFT JOIN CODE_DATA
+		SEX ON
+		USER_INFO.USER_SEX=SEX.CODE1 AND SEX.TYPE='002'
+		LEFT JOIN
+		T_ORGANIZATION
+		ON USER_INFO.ORG_ID=T_ORGANIZATION.ID
+		LEFT JOIN
+		CODE_DATA STATUS ON USER_INFO.USER_STATUS=STATUS.CODE1 AND
+		STATUS.TYPE='001'
+		
+		LEFT JOIN CODE_DATA
+		PROFE ON
+		USER_INFO.PROFESSION=PROFE.CODE1 AND PROFE.TYPE='021'
+		
+		WHERE 1=1
+		<if test="userInfo.userType != null and userInfo.userType != ''">
+			AND USER_TYPE =
+			#{userInfo.userType,jdbcType=VARCHAR}
+		</if>
+		<if test="userInfo.loginId != null and userInfo.loginId != ''">
+			AND LOGIN_ID like
+			CONCAT('%',#{userInfo.loginId,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="userInfo.userName != null and userInfo.userName != ''">
+			AND USER_NAME like
+			CONCAT('%',#{userInfo.userName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="userInfo.telephone != null and userInfo.telephone != ''">
+			AND TELEPHONE like
+			CONCAT('%',#{userInfo.telephone,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="userInfo.orgId != null and userInfo.orgId != ''">
+			AND ORG_ID = #{userInfo.orgId,jdbcType=BIGINT}
+		</if>
+		<if test="userInfo.roleId != null and userInfo.roleId != ''">
+			AND USER_ROLE.ROLE_ID =
+			#{userInfo.roleId,jdbcType=INTEGER}
+		</if>
+		<if test="userInfo.userStatus != null and userInfo.userStatus != ''">
+			AND USER_STATUS = #{userInfo.userStatus,jdbcType=CHAR}
+		</if>
+		limit
+		#{startIndex}, #{pageSize}
+	</select>
+
+
+	<!-- 根据用户ID更新用户密码 -->
+	<update id="updatePasswordById" parameterType="java.util.Map">
+		UPDATE USER_INFO
+		SET
+		PASSWORD = #{password,jdbcType=VARCHAR},
+		UPDATE_USER =
+		#{updateUser,jdbcType=BIGINT},
+		UPDATE_DATE =
+		#{updateDate,jdbcType=TIMESTAMP}
+		WHERE USER_ID IN
+		<foreach item="id" index="index" collection="idArray" open="("
+			separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+	
+	<!-- 根据用户ID更新用户最后登录时间 -->
+	<update id="updateLoginTimeById" parameterType="com.soft.common.domain.UserInfo">
+		UPDATE USER_INFO
+		SET
+		LOGIN_TIME = #{loginTime,jdbcType=TIMESTAMP},
+		UPDATE_USER =
+		#{updateUser,jdbcType=BIGINT},
+		UPDATE_DATE =
+		#{updateDate,jdbcType=TIMESTAMP}
+		WHERE USER_ID =
+		#{userId,jdbcType=BIGINT}
+	</update>
+</mapper>

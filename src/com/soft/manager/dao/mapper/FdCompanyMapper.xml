@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.soft.manager.dao.FdCompanyDao">
+	<resultMap id="BaseResultMap" type="com.soft.common.domain.FdCompany">
+		<id column="ID" property="id" jdbcType="BIGINT" />
+		<result column="LICENSE" property="license" jdbcType="VARCHAR" />
+		<result column="COMPANY_NAME" property="companyName" jdbcType="VARCHAR" />
+		<result column="LEGAL_PERSON" property="legalPerson" jdbcType="VARCHAR" />
+		<result column="DIRECTOR" property="director" jdbcType="VARCHAR" />
+		<result column="OWNER" property="owner" jdbcType="VARCHAR" />
+		<result column="PHONE" property="phone" jdbcType="VARCHAR" />
+		<result column="ADDRESS" property="address" jdbcType="VARCHAR" />
+		<result column="COMPANY_TYPE" property="companyType" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="ISSUE_DATE" property="issueDate" jdbcType="TIMESTAMP" />
+		<result column="AGENT" property="agent" jdbcType="VARCHAR" />
+		<result column="AGENT_PHONE" property="agentPhone" jdbcType="VARCHAR" />
+		<result column="HANDLE_YEAR" property="handleYear" jdbcType="VARCHAR" />
+		<result column="HANDLE_TYPE" property="handleType" jdbcType="VARCHAR" />
+		<result column="DELETE_SIGN" property="deleteSign" jdbcType="BIT" />
+		<result column="VERSION" property="version" jdbcType="TIMESTAMP" />
+		<result column="UPDATE_USER" property="updateUser" jdbcType="BIGINT" />
+		<result column="UPDATE_DATE" property="updateDate" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER" property="createUser" jdbcType="BIGINT" />
+		<result column="CREATE_DATE" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="HANDLE_TYPE_NAME" property="handleTypeName" jdbcType="VARCHAR" />
+		<result column="COMPANY_TYPE_NAME" property="companyTypeName" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		A.ID,
+		A.LICENSE,
+		A.COMPANY_NAME,
+		A.LEGAL_PERSON,
+		A.DIRECTOR,
+		A.OWNER,
+		A.PHONE,
+		A.ADDRESS,
+		A.COMPANY_TYPE,
+		A.REMARK,
+		A.ISSUE_DATE,
+		A.AGENT,
+		A.AGENT_PHONE,
+		A.HANDLE_YEAR,
+		A.HANDLE_TYPE,
+		A.VERSION,
+		A.DELETE_SIGN,
+		A.CREATE_USER,
+		A.CREATE_DATE,
+		A.UPDATE_USER,
+		A.UPDATE_DATE
+	</sql>
+
+	<!-- 新增从业企业信息 -->
+	<insert id="insertCompany" parameterType="com.soft.common.domain.FdCompany">
+		INSERT INTO	FD_COMPANY (
+			ID,
+			LICENSE,
+			COMPANY_NAME,
+			LEGAL_PERSON,
+			DIRECTOR,
+			OWNER,
+			PHONE,
+			ADDRESS,
+			COMPANY_TYPE,
+			REMARK,
+			ISSUE_DATE,
+			AGENT,
+			AGENT_PHONE,
+			HANDLE_YEAR,
+			HANDLE_TYPE,
+			DELETE_SIGN,
+			CREATE_USER,
+			CREATE_DATE,
+			UPDATE_USER,
+			UPDATE_DATE)
+		VALUES (
+			#{id,jdbcType=BIGINT},
+			#{license,jdbcType=VARCHAR},
+			#{companyName,jdbcType=VARCHAR},
+			#{legalPerson,jdbcType=VARCHAR},
+			#{director,jdbcType=VARCHAR},
+			#{owner,jdbcType=VARCHAR},
+			#{phone,jdbcType=VARCHAR},
+			#{address,jdbcType=VARCHAR},
+			#{companyType,jdbcType=VARCHAR},
+			#{remark,jdbcType=VARCHAR},
+			#{issueDate,jdbcType=TIMESTAMP},
+			#{agent,jdbcType=VARCHAR},
+			#{agentPhone,jdbcType=VARCHAR},
+			#{handleYear,jdbcType=VARCHAR},
+			#{handleType,jdbcType=VARCHAR},
+			#{deleteSign,jdbcType=BIT},
+			#{updateUser,jdbcType=BIGINT},
+			#{updateDate,jdbcType=TIMESTAMP},
+			#{createUser,jdbcType=BIGINT},
+			#{createDate,jdbcType=TIMESTAMP}
+		)
+	</insert>
+
+	<!-- 根据从业企业信息ID批量删除从业企业信息 -->
+	<delete id="deleteCompanysById" parameterType="java.util.Map">
+		UPDATE
+		  FD_COMPANY
+		SET
+		  DELETE_SIGN = true
+		WHERE ID IN
+		<foreach item="id" index="index" collection="idArray" open="(" separator="," close=")">
+		  #{id}
+		</foreach>
+	</delete>
+
+	<!-- 根据从业企业信息ID查询从业企业信息 -->
+	<select id="findCompanyById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+		SELECT
+		     <include refid="Base_Column_List" />
+		FROM FD_COMPANY A
+	   WHERE ID = #{id,jdbcType=BIGINT}
+	</select>
+
+	<!-- 根据从业企业信息ID更新从业企业信息 -->
+	<update id="updateCompanyById" parameterType="com.soft.common.domain.FdCompany">
+		UPDATE
+		  FD_COMPANY
+		SET
+		  LICENSE      = #{license,jdbcType=VARCHAR},
+		  COMPANY_NAME = #{companyName,jdbcType=VARCHAR},
+		  LEGAL_PERSON = #{legalPerson,jdbcType=VARCHAR},
+		  DIRECTOR     = #{director,jdbcType=VARCHAR},
+		  OWNER        = #{owner,jdbcType=VARCHAR},
+		  PHONE        = #{phone,jdbcType=VARCHAR},
+		  ADDRESS      = #{address,jdbcType=VARCHAR},
+		  COMPANY_TYPE = #{companyType,jdbcType=VARCHAR},
+		  REMARK       = #{remark,jdbcType=VARCHAR},
+		  ISSUE_DATE   = #{issueDate,jdbcType=TIMESTAMP},
+		  AGENT        = #{agent,jdbcType=VARCHAR},
+		  AGENT_PHONE  = #{agentPhone,jdbcType=VARCHAR},
+		  HANDLE_YEAR  = #{handleYear,jdbcType=VARCHAR},
+		  HANDLE_TYPE  = #{handleType,jdbcType=VARCHAR},
+		  UPDATE_USER  = #{updateUser,jdbcType=BIGINT},
+		  UPDATE_DATE  = #{updateDate,jdbcType=TIMESTAMP}
+	    WHERE ID       = #{id,jdbcType=BIGINT}
+	</update>
+
+	<!-- 根据查询条件查询从业企业信息笔数 -->
+	<select id="getCompanyCount" parameterType="com.soft.common.domain.FdCompany"
+		resultType="java.lang.Integer">
+		SELECT
+			 COUNT(ID)
+		FROM FD_COMPANY
+	   WHERE DELETE_SIGN=false
+		<if test="handleType != null and handleType != ''">
+			 AND HANDLE_TYPE = #{handleType,jdbcType=VARCHAR}
+		</if>
+		<if test="companyName != null and companyName != ''">
+			 AND COMPANY_NAME like CONCAT('%',#{companyName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="handleYear != null and handleYear != ''">
+			 AND HANDLE_YEAR = #{handleYear,jdbcType=VARCHAR}
+		</if>
+	</select>
+
+	<!-- 根据查询条件查询从业企业信息列表 -->
+	<select id="getCompanyList" parameterType="java.util.Map" resultMap="BaseResultMap">
+		SELECT
+		     <include refid="Base_Column_List" />
+		     ,CD.VALUE AS HANDLE_TYPE_NAME
+		     ,CT.VALUE AS COMPANY_TYPE_NAME
+		FROM FD_COMPANY A
+   LEFT JOIN CODE_DATA CD ON A.HANDLE_TYPE=CD.CODE1 AND CD.TYPE='117'
+   LEFT JOIN CODE_DATA CT ON A.COMPANY_TYPE=CT.CODE1 AND CT.TYPE='116'
+	   WHERE DELETE_SIGN=false
+		<if test="record.handleType != null and record.handleType != ''">
+			 AND HANDLE_TYPE = #{record.handleType,jdbcType=VARCHAR}
+		</if>
+		<if test="record.companyName != null and record.companyName != ''">
+			 AND COMPANY_NAME like CONCAT('%',#{record.companyName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="record.handleYear != null and record.handleYear != ''">
+			 AND HANDLE_YEAR = #{record.handleYear,jdbcType=VARCHAR}
+		</if>
+	ORDER BY A.CREATE_DATE DESC
+	   limit #{startIndex}, #{pageSize}
+	</select>
+
+</mapper>

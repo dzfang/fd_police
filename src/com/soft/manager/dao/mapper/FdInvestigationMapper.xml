@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.soft.manager.dao.FdInvestigationDao">
+	<resultMap id="BaseResultMap" type="com.soft.common.domain.FdInvestigation">
+		<id column="ID" property="id" jdbcType="BIGINT" />
+		<result column="CASE_CODE" property="caseCode" jdbcType="VARCHAR" />
+		<result column="CASE_NAME" property="caseName" jdbcType="VARCHAR" />
+		<result column="CASE_TYPE" property="caseType" jdbcType="VARCHAR" />
+		<result column="UNDERTAKE_PERSON" property="undertakePerson" jdbcType="VARCHAR" />
+		<result column="UNDERTAKE_ORG" property="undertakeOrg" jdbcType="VARCHAR" />
+		<result column="ILLEGAL_FACTS" property="illegalFacts" jdbcType="VARCHAR" />
+		<result column="RELATED_THINGS" property="relatedThings" jdbcType="VARCHAR" />
+		<result column="RELATED_VALUE" property="relatedValue" jdbcType="DECIMAL" />
+		<result column="CASE_SOURCE" property="caseSource" jdbcType="VARCHAR" />
+		<result column="CASE_AREA" property="caseArea" jdbcType="VARCHAR" />
+		<result column="CASE_PLACE" property="casePlace" jdbcType="VARCHAR" />
+		<result column="CASE_ADDRESS" property="caseAddress" jdbcType="VARCHAR" />
+		<result column="RELATED_ORG" property="relatedOrg" jdbcType="VARCHAR" />
+		<result column="CASE_TIME" property="caseTime" jdbcType="TIMESTAMP" />
+		<result column="FILING_TIME" property="filingTime" jdbcType="TIMESTAMP" />
+		<result column="CRIMNAL_START" property="crimnalStart" jdbcType="TIMESTAMP" />
+		<result column="CRIMNAL_END" property="crimnalEnd" jdbcType="TIMESTAMP" />
+		<result column="MONITOR_PLACE" property="monitorPlace" jdbcType="VARCHAR" />
+		<result column="MONITOR_START" property="monitorStart" jdbcType="TIMESTAMP" />
+		<result column="MONITOR_END" property="monitorEnd" jdbcType="TIMESTAMP" />
+		<result column="BAIL_TIME" property="bailTime" jdbcType="TIMESTAMP" />
+		<result column="BAIL_PERSON" property="bailPerson" jdbcType="VARCHAR" />
+		<result column="ARREST_DATE" property="arrestDate" jdbcType="TIMESTAMP" />
+		<result column="EXTEND_DETENTION" property="extendDetention" jdbcType="BIT" />
+		<result column="TERM" property="term" jdbcType="VARCHAR" />
+		<result column="FINE" property="fine" jdbcType="DECIMAL" />
+		<result column="PROSECUTION" property="prosecution" jdbcType="BIT" />
+		<result column="REVOCATION_DATE" property="pevocationDate" jdbcType="TIMESTAMP" />
+		<result column="DELETE_SIGN" property="deleteSign" jdbcType="BIT" />
+		<result column="VERSION" property="version" jdbcType="TIMESTAMP" />
+		<result column="UPDATE_USER" property="updateUser" jdbcType="BIGINT" />
+		<result column="UPDATE_DATE" property="updateDate" jdbcType="TIMESTAMP" />
+		<result column="CREATE_USER" property="createUser" jdbcType="BIGINT" />
+		<result column="CREATE_DATE" property="createDate" jdbcType="TIMESTAMP" />
+		<!--扩展字段 -->
+		<result column="CASE_TYPE_NAME" property="caseTypeName" jdbcType="VARCHAR" />
+		<result column="RELATED_THINGS_NAME" property="relatedThingsName" jdbcType="VARCHAR" />
+		<result column="CASE_SOURCE_NAME" property="caseSourceName" jdbcType="VARCHAR" />
+		<result column="CASE_AREA_NAME" property="caseAreaName" jdbcType="VARCHAR" />
+		<result column="CASE_PLACE_NAME" property="casePlaceName" jdbcType="VARCHAR" />
+		<result column="FILING_YEAR" property="filingYear" jdbcType="VARCHAR" />
+		<result column="FILING_MONTH" property="filingMonth" jdbcType="VARCHAR" />
+		<result column="FILING_COUNT" property="filingCount" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID,CASE_CODE,CASE_NAME,CASE_TYPE,UNDERTAKE_PERSON,UNDERTAKE_ORG,ILLEGAL_FACTS,
+		RELATED_THINGS,RELATED_VALUE,CASE_SOURCE,CASE_AREA,CASE_PLACE,CASE_ADDRESS,RELATED_ORG,
+		CASE_TIME,FILING_TIME,CRIMNAL_START,CRIMNAL_END,MONITOR_PLACE,MONITOR_START,MONITOR_END,
+		BAIL_TIME,BAIL_PERSON,ARREST_DATE,EXTEND_DETENTION,TERM,FINE,PROSECUTION,REVOCATION_DATE,
+		VERSION,FILING_YEAR,FILING_MONTH
+	</sql>
+
+	<!-- 新增食品药品犯罪侦查案件 -->
+	<insert id="insertInvestigation" parameterType="com.soft.common.domain.FdInvestigation" useGeneratedKeys="true" keyProperty="id">
+		insert into
+		FD_INVESTIGATION
+		(ID,CASE_CODE,CASE_NAME,CASE_TYPE,UNDERTAKE_PERSON,UNDERTAKE_ORG,ILLEGAL_FACTS,
+		RELATED_THINGS,RELATED_VALUE,CASE_SOURCE,CASE_AREA,CASE_PLACE,CASE_ADDRESS,RELATED_ORG,
+		CASE_TIME,FILING_TIME,CRIMNAL_START,CRIMNAL_END,MONITOR_PLACE,MONITOR_START,MONITOR_END,
+		BAIL_TIME,BAIL_PERSON,ARREST_DATE,EXTEND_DETENTION,TERM,FINE,PROSECUTION,REVOCATION_DATE,
+		FILING_YEAR,FILING_MONTH,DELETE_SIGN,UPDATE_USER,UPDATE_DATE,CREATE_USER, CREATE_DATE
+		)
+		values (#{id,jdbcType=BIGINT},
+		#{caseCode,jdbcType=VARCHAR},
+		#{caseName,jdbcType=VARCHAR},
+		#{caseType,jdbcType=VARCHAR},
+		#{undertakePerson,jdbcType=VARCHAR},
+		#{undertakeOrg,jdbcType=VARCHAR},
+		#{illegalFacts,jdbcType=VARCHAR},
+		#{relatedThings,jdbcType=VARCHAR},
+		#{relatedValue,jdbcType=VARCHAR},
+		#{caseSource,jdbcType=VARCHAR},
+		#{caseArea,jdbcType=VARCHAR},
+		#{casePlace,jdbcType=VARCHAR},
+		#{caseAddress,jdbcType=VARCHAR},
+		#{relatedOrg,jdbcType=VARCHAR},
+		#{caseTime,jdbcType=TIMESTAMP},
+		#{filingTime,jdbcType=TIMESTAMP},
+		#{crimnalStart,jdbcType=TIMESTAMP},
+		#{crimnalEnd,jdbcType=TIMESTAMP},
+		#{monitorPlace,jdbcType=VARCHAR},
+		#{monitorStart,jdbcType=TIMESTAMP},
+		#{monitorEnd,jdbcType=TIMESTAMP},
+		#{bailTime,jdbcType=TIMESTAMP},
+		#{bailPerson,jdbcType=VARCHAR},
+		#{arrestDate,jdbcType=TIMESTAMP},
+		#{extendDetention,jdbcType=BIT},
+		#{term,jdbcType=TIMESTAMP},
+		#{fine,jdbcType=DECIMAL},
+		#{prosecution,jdbcType=BIT},
+		#{pevocationDate,jdbcType=TIMESTAMP},
+		#{filingYear,jdbcType=VARCHAR},
+		#{filingMonth,jdbcType=VARCHAR},
+		#{deleteSign,jdbcType=BIT},
+		#{updateUser,jdbcType=BIGINT},
+		#{updateDate,jdbcType=TIMESTAMP},
+		#{createUser,jdbcType=BIGINT},
+		#{createDate,jdbcType=TIMESTAMP}
+		)
+	</insert>
+
+	<!-- 根据食品药品犯罪侦查案件ID批量删除食品药品犯罪侦查案件 -->
+	<delete id="deleteInvestigationsById" parameterType="java.util.Map">
+		DELETE FROM
+		FD_INVESTIGATION
+		WHERE ID IN
+		<foreach item="id" index="index" collection="idArray" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<!-- 根据食品药品犯罪侦查案件ID查询食品药品犯罪侦查案件 -->
+	<select id="findInvestigationById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from FD_INVESTIGATION
+		where ID=#{id,jdbcType=BIGINT}
+	</select>
+
+	<!-- 根据食品药品犯罪侦查案件ID更新食品药品犯罪侦查案件 -->
+	<update id="updateInvestigationById" parameterType="com.soft.common.domain.FdInvestigation">
+		update
+		FD_INVESTIGATION
+		set CASE_CODE=#{caseCode,jdbcType=VARCHAR},
+		CASE_NAME=#{caseName,jdbcType=VARCHAR},
+		CASE_TYPE=#{caseType,jdbcType=VARCHAR},
+		UNDERTAKE_PERSON=#{undertakePerson,jdbcType=VARCHAR},
+		UNDERTAKE_ORG=#{undertakeOrg,jdbcType=VARCHAR},
+		ILLEGAL_FACTS=#{illegalFacts,jdbcType=VARCHAR},
+		RELATED_THINGS=#{relatedThings,jdbcType=VARCHAR},
+		RELATED_VALUE=#{relatedValue,jdbcType=VARCHAR},
+		CASE_SOURCE=#{caseSource,jdbcType=VARCHAR},
+		CASE_AREA=#{caseArea,jdbcType=VARCHAR},
+		CASE_PLACE=#{casePlace,jdbcType=VARCHAR},
+		CASE_ADDRESS=#{caseAddress,jdbcType=VARCHAR},
+		RELATED_ORG=#{relatedOrg,jdbcType=VARCHAR},
+		CASE_TIME=#{caseTime,jdbcType=TIMESTAMP},
+		FILING_TIME=#{filingTime,jdbcType=TIMESTAMP},
+		CRIMNAL_START=#{crimnalStart,jdbcType=TIMESTAMP},
+		CRIMNAL_END=#{crimnalEnd,jdbcType=TIMESTAMP},
+		MONITOR_PLACE=#{monitorPlace,jdbcType=VARCHAR},
+		MONITOR_START=#{monitorStart,jdbcType=TIMESTAMP},
+		MONITOR_END=#{monitorEnd,jdbcType=TIMESTAMP},
+		BAIL_TIME=#{bailTime,jdbcType=TIMESTAMP},
+		BAIL_PERSON=#{bailPerson,jdbcType=VARCHAR},
+		ARREST_DATE=#{arrestDate,jdbcType=TIMESTAMP},
+		EXTEND_DETENTION=#{extendDetention,jdbcType=BIT},
+		TERM=#{term,jdbcType=TIMESTAMP},
+		FINE=#{fine,jdbcType=DECIMAL},
+		PROSECUTION=#{prosecution,jdbcType=BIT},
+		REVOCATION_DATE=#{pevocationDate,jdbcType=TIMESTAMP},
+		FILING_YEAR=#{filingYear,jdbcType=VARCHAR},
+		FILING_MONTH=#{filingMonth,jdbcType=VARCHAR},
+		UPDATE_USER=#{updateUser,jdbcType=BIGINT},
+		UPDATE_DATE=#{updateDate,jdbcType=TIMESTAMP}
+		where ID=#{id,jdbcType=BIGINT}
+	</update>
+
+	<!-- 根据查询条件查询食品药品犯罪侦查案件笔数 -->
+	<select id="getInvestigationCount" parameterType="com.soft.common.domain.FdInvestigation" resultType="java.lang.Integer">
+		SELECT
+		COUNT(ID)
+		FROM FD_INVESTIGATION
+		WHERE DELETE_SIGN=false
+		<if test="caseCode != null and caseCode != ''">
+			AND CASE_CODE like
+			CONCAT('%',#{caseCode,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="caseType != null and caseType != ''">
+			AND CASE_TYPE = #{caseType,jdbcType=VARCHAR}
+		</if>
+		<if test="caseName != null and caseName != ''">
+			AND CASE_NAME like
+			CONCAT('%',#{caseName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="undertakeOrg != null and undertakeOrg != ''">
+			AND UNDERTAKE_ORG like
+			CONCAT('%',#{undertakeOrg,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="filingTime != null and filingTime != ''">
+			AND FILING_TIME = #{filingTime,jdbcType=TIMESTAMP}
+		</if>
+		<!-- <if test="closeCaseTime != null and closeCaseTime != ''">
+			AND CLOSE_CASE_TIME = #{closeCaseTime,jdbcType=TIMESTAMP}
+		</if> -->
+		<if test="relatedThings != null and relatedThings != ''">
+			AND RELATED_THINGS = #{relatedThings,jdbcType=VARCHAR}
+		</if>
+		<if test="caseArea != null and caseArea != ''">
+			AND CASE_AREA = #{caseArea,jdbcType=VARCHAR}
+		</if>
+		<if test="casePlace != null and casePlace != ''">
+			AND CASE_PLACE = #{casePlace,jdbcType=VARCHAR}
+		</if>
+		<if test="illegalFacts != null and illegalFacts != ''">
+			AND ILLEGAL_FACTS like
+			CONCAT('%',#{illegalFacts,jdbcType=VARCHAR},'%')
+		</if>
+	</select>
+
+	<!-- 根据查询条件查询食品药品犯罪侦查案件列表 -->
+	<select id="getInvestigationList" parameterType="java.util.Map" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		,
+		CT.VALUE AS CASE_TYPE_NAME,
+		RT.VALUE AS RELATED_THINGS_NAME,
+		CS.VALUE AS CASE_SOURCE_NAME,
+		CA.VALUE AS CASE_AREA_NAME,
+		CP.VALUE AS CASE_PLACE_NAME
+		FROM FD_INVESTIGATION A
+		LEFT
+		JOIN CODE_DATA CT ON
+		A.CASE_TYPE=CT.CODE1 AND CT.TYPE='100'
+		LEFT JOIN CODE_DATA RT ON A.RELATED_THINGS=RT.CODE1 AND RT.TYPE='101'
+		LEFT JOIN CODE_DATA CS ON A.CASE_SOURCE=CS.CODE1 AND CS.TYPE='102'
+		LEFT JOIN CODE_DATA CA ON
+		A.CASE_AREA=CA.CODE1 AND CA.TYPE='103'
+		LEFT JOIN CODE_DATA CP ON A.CASE_PLACE=CP.CODE1 AND CP.TYPE='104'
+		WHERE
+		A.DELETE_SIGN=false
+		<if test="record.caseCode != null and record.caseCode != ''">
+			AND CASE_CODE like CONCAT('%',#{record.caseCode,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="record.caseType != null and record.caseType != ''">
+			AND CASE_TYPE = #{record.caseType,jdbcType=VARCHAR}
+		</if>
+		<if test="record.caseName != null and record.caseName != ''">
+			AND CASE_NAME like CONCAT('%',#{record.caseName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="record.undertakeOrg != null and record.undertakeOrg != ''">
+			AND UNDERTAKE_ORG like
+			CONCAT('%',#{record.undertakeOrg,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="record.filingTime != null and record.filingTime != ''">
+			AND FILING_TIME = #{record.filingTime,jdbcType=TIMESTAMP}
+		</if>
+		<!-- <if test="record.closeCaseTime != null and record.closeCaseTime != ''">
+			AND CLOSE_CASE_TIME = #{record.closeCaseTime,jdbcType=TIMESTAMP}
+		</if> -->
+		<if test="record.relatedThings != null and record.relatedThings != ''">
+			AND RELATED_THINGS = #{record.relatedThings,jdbcType=VARCHAR}
+		</if>
+		<if test="record.caseArea != null and record.caseArea != ''">
+			AND CASE_AREA = #{record.caseArea,jdbcType=VARCHAR}
+		</if>
+		<if test="record.casePlace != null and record.casePlace != ''">
+			AND CASE_PLACE = #{record.casePlace,jdbcType=VARCHAR}
+		</if>
+		<if test="record.illegalFacts != null and record.illegalFacts != ''">
+			AND ILLEGAL_FACTS like
+			CONCAT('%',#{record.illegalFacts,jdbcType=VARCHAR},'%')
+		</if>
+		ORDER BY A.CREATE_DATE DESC
+		limit
+		#{startIndex}, #{pageSize}
+	</select>
+	
+	<!-- 根据立案年份统计案件数量 -->
+	<select id="getInvestigationCountByYear" parameterType="java.lang.String" resultMap="BaseResultMap">
+		SELECT
+		RELATED_THINGS, FILING_MONTH,COUNT(ID) AS FILING_COUNT
+		FROM FD_INVESTIGATION
+		WHERE DELETE_SIGN=false
+		AND FILING_YEAR=#{filingYear,jdbcType=VARCHAR}
+		GROUP BY RELATED_THINGS, FILING_MONTH
+	</select>
+</mapper>

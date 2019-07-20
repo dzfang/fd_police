@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.soft.manager.dao.CodeTypeDao">
+	<resultMap id="BaseResultMap" type="com.soft.common.domain.CodeType">
+		<id column="TYPE" property="type" jdbcType="VARCHAR" />
+		<result column="TEXT" property="text" jdbcType="VARCHAR" />
+		<result column="CREATE_USER" property="createUser" jdbcType="INTEGER" />
+		<result column="CREATE_DATE" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="UPDATE_USER" property="updateUser" jdbcType="INTEGER" />
+		<result column="UPDATE_DATE" property="updateDate" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		TYPE, TEXT, CREATE_USER, CREATE_DATE, UPDATE_USER,
+		UPDATE_DATE
+	</sql>
+	<insert id="insertCodeType" parameterType="com.soft.common.domain.CodeType">
+		INSERT INTO CODE_TYPE
+		(TYPE, TEXT, CREATE_USER,
+		CREATE_DATE, UPDATE_USER, UPDATE_DATE
+		)
+		VALUES
+		(#{type,jdbcType=VARCHAR}, #{text,jdbcType=VARCHAR},
+		#{createUser,jdbcType=INTEGER},
+		#{createDate,jdbcType=TIMESTAMP},
+		#{updateUser,jdbcType=INTEGER}, #{updateDate,jdbcType=TIMESTAMP}
+		)
+	</insert>
+	<update id="updateCodeType" parameterType="com.soft.common.domain.CodeType">
+		UPDATE CODE_TYPE
+		SET
+		TYPE = #{type,jdbcType=VARCHAR},
+		TEXT = #{text,jdbcType=VARCHAR},
+		UPDATE_USER =
+		#{updateUser,jdbcType=INTEGER},
+		UPDATE_DATE =
+		#{updateDate,jdbcType=TIMESTAMP}
+		WHERE 
+        TYPE = #{type,jdbcType=VARCHAR}
+	</update>
+	<!-- 根据类别编码查询 -->
+	<select id="selectCodeTypeByType" parameterType="com.soft.common.domain.CodeType"
+		resultType="java.lang.Integer">
+		SELECT
+		COUNT(TYPE)
+		FROM CODE_TYPE
+		WHERE 1=1
+		<if test="type!= null and type != ''">
+			AND TYPE =#{type,jdbcType=VARCHAR}
+		</if>
+	</select>
+	<!-- 查询所有系统类别初始化类别树 -->
+	<select id="getAllCodeType" parameterType="java.util.Map"
+		resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM CODE_TYPE
+	</select>
+	<!-- 根据类别类型删除对应的类别信息 -->
+	<delete id="deleteCodeTypeById" parameterType="java.util.Map">
+		DELETE FROM
+		CODE_TYPE
+		WHERE TYPE IN
+		<foreach item="id" index="index" collection="idArray" open="("
+			separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+	<!-- 根据类别类型查询类别信息 -->
+	<select id="findCodeTypeById" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM CODE_TYPE
+		WHERE TYPE = #{type,jdbcType=INTEGER}
+	</select>
+</mapper>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.soft.manager.dao.RoleDataDao">
+	<resultMap id="BaseResultMap" type="com.soft.common.domain.RoleData">
+		<id column="DATA_ID" property="dataId" jdbcType="VARCHAR" />
+		<id column="MENU_ID" property="menuId" jdbcType="INTEGER" />
+		<id column="ROLE_ID" property="roleId" jdbcType="INTEGER" />
+		<id column="DATA_NAME" property="dataName" jdbcType="INTEGER" />
+		<id column="IS_CHECKED" property="isChecked" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="getRoleData" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		SELECT
+		DATA_ID,MENU_ID,ROLE_ID FROM ROLE_DATA
+		WHERE
+		ROLE_ID=#{roleId,jdbcType=INTEGER}
+		AND MENU_ID =
+		#{menuId,jdbcType=INTEGER}
+	</select>
+
+	<!-- 添加角色数据范围信息 -->
+	<insert id="insertRoleData" parameterType="com.soft.common.domain.RoleData">
+		INSERT INTO ROLE_DATA
+		(ROLE_ID, MENU_ID,DATA_ID
+		)
+		VALUES
+		(
+		#{roleId,jdbcType=INTEGER},
+		#{menuId,jdbcType=INTEGER},
+		#{dataId,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<!-- 根据角色ID删除角色数据权限信息 -->
+	<delete id="deleteRoleDataByRoleId" parameterType="java.lang.Integer">
+		DELETE FROM
+		ROLE_DATA
+		WHERE ROLE_ID =#{roleId,jdbcType=INTEGER}
+	</delete>
+
+	<!-- 查询角色所能分配的数据范围 -->
+	<select id="getAllocDataList" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		SELECT DISTINCT
+		ALLOCATE_DATA.DATA_ID,ALLOCATE_DATA.ROLE_ID,ALLOCATE_DATA.MENU_ID,
+		CASE WHEN ALLOCATE_DATA.DATA_ID='-1' THEN '个人数据' ELSE ORG_NAME END AS
+		DATA_NAME
+		,CASE WHEN (SELECT COUNT(*) FROM ROLE_DATA A WHERE A.ROLE_ID=#{roleId,jdbcType=INTEGER} AND A.DATA_ID=ROLE_DATA.DATA_ID AND A.MENU_ID=ROLE_DATA.MENU_ID  )=0 THEN '0' ELSE '1' END AS
+		IS_CHECKED FROM ALLOCATE_DATA
+		LEFT JOIN ROLE_DATA
+		ON
+		ALLOCATE_DATA.MENU_ID = ROLE_DATA.MENU_ID AND
+		ALLOCATE_DATA.DATA_ID=ROLE_DATA.DATA_ID AND ROLE_DATA.ROLE_ID=#{roleId,jdbcType=INTEGER}
+		LEFT JOIN T_ORGANIZATION ON
+		ALLOCATE_DATA.DATA_ID=ID
+		WHERE
+		ALLOCATE_DATA.ROLE_ID=#{currtRoleId,jdbcType=INTEGER} AND
+		ALLOCATE_DATA.MENU_ID=#{menuId,jdbcType=INTEGER}
+		ORDER BY
+		ALLOCATE_DATA.DATA_ID
+		ASC
+	</select>
+
+	<!-- 添加角色数据范围信息 -->
+	<insert id="insertAllocateData" parameterType="com.soft.common.domain.RoleData">
+		INSERT INTO
+		ALLOCATE_DATA
+		(ROLE_ID, MENU_ID,DATA_ID
+		)
+		VALUES
+		(
+		#{roleId,jdbcType=INTEGER},
+		#{menuId,jdbcType=INTEGER},
+		#{dataId,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<!-- 根据角色ID删除该角色可分配的数据范围 -->
+	<delete id="deleteAllocateData" parameterType="java.lang.Integer">
+		DELETE FROM
+		ALLOCATE_DATA
+		WHERE ROLE_ID =#{roleId,jdbcType=INTEGER}
+	</delete>
+</mapper>

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+            http://www.springframework.org/schema/mvc 
+            http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd 
+            http://www.springframework.org/schema/context 
+            http://www.springframework.org/schema/context/spring-context-3.0.xsd 
+            http://www.springframework.org/schema/aop 
+            http://www.springframework.org/schema/aop/spring-aop-3.0.xsd 
+            http://www.springframework.org/schema/tx 
+            http://www.springframework.org/schema/tx/spring-tx-3.0.xsd 
+            http://www.springframework.org/schema/util 
+            http://www.springframework.org/schema/util/spring-util-3.1.xsd">
+
+	<!-- 扫描service、dao组件 -->
+	<context:component-scan base-package="com.soft" />
+	<!-- 开启对 @Aspect 的支持-->
+	<aop:aspectj-autoproxy/>
+	<!-- 配置 properites文件 -->
+	<context:property-placeholder location="classpath*:conf/*.properties" />
+
+	<!-- <util:properties id="settings" location="classpath:service.properties" 
+		/> <util:properties id="solr" location="classpath:solr.properties" /> -->
+
+	<!-- 系统共通配置 -->
+	<bean id="config" class="com.soft.util.Config">
+		<!-- 文件上传路径 -->
+		<property name="uploadBasepath" value="${upload.basepath}" />
+		<property name="uploadUserpath" value="${upload.userpath}" />
+		<!-- 新增用户时的默认密码 -->
+		<property name="defaultPassword" value="${defaultPassword}" />
+ 		<!-- Sorl配置 -->
+		<property name="sorlUrl" value="${solr.Url}"></property>
+	</bean>
+	<bean id="parentDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">  
+    </bean>  
+	<!-- 数据源 -->
+	<bean id="dataSourceMaster" class="com.mchange.v2.c3p0.ComboPooledDataSource" parent="parentDataSource">
+		<property name="driverClass" value="${jdbc.driverClassName}" />
+		<property name="jdbcUrl" value="${jdbc.url}" />
+		<property name="user" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		<property name="maxPoolSize" value="${c3p0.pool.size.max}" />
+		<property name="minPoolSize" value="${c3p0.pool.size.min}" />
+		<property name="initialPoolSize" value="${c3p0.pool.size.ini}" />
+		<property name="acquireIncrement" value="${c3p0.pool.size.increment}" />
+		<property name="testConnectionOnCheckout" value="${c3p0.pool.testConnectionOnCheckout}" />
+	</bean>
+	
+	<!-- GIS数据源 -->
+	<bean id="dataSourceGIS" class="com.mchange.v2.c3p0.ComboPooledDataSource" parent="parentDataSource">
+		<property name="driverClass" value="${jdbc.driverClassName}" />
+		<property name="jdbcUrl" value="${gis.jdbc.url}" />
+		<property name="user" value="${gis.jdbc.username}" />
+		<property name="password" value="${gis.jdbc.password}" />
+		<property name="maxPoolSize" value="${c3p0.pool.size.max}" />
+		<property name="minPoolSize" value="${c3p0.pool.size.min}" />
+		<property name="initialPoolSize" value="${c3p0.pool.size.ini}" />
+		<property name="acquireIncrement" value="${c3p0.pool.size.increment}" />
+		<property name="testConnectionOnCheckout" value="${c3p0.pool.testConnectionOnCheckout}" />
+	</bean>
+	
+	<bean id="dataSource" class="com.soft.util.DynamicDataSource">
+        <property name="defaultTargetDataSource" ref="dataSourceMaster" />
+        <property name="targetDataSources">
+            <map key-type="java.lang.String">
+                <entry key="MASTER" value-ref="dataSourceMaster" />
+                <entry key="GIS" value-ref="dataSourceGIS" />
+             </map>
+        </property>
+    </bean>
+    
+	<!-- sessionFactory 将spring和mybatis整合 -->
+	<bean id="managerSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:conf/sqlMapConfig.xml" />
+		<property name="mapperLocations"
+			value="classpath:com/soft/manager/dao/mapper/*.xml" />
+	</bean>
+
+	<bean id="managerMybitisConfig" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.soft.manager.dao" />
+		<property name="sqlSessionFactoryBeanName" value="managerSqlSessionFactory" />
+	</bean>
+
+
+	<!-- 事务 -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!--1024*200即200k -->
+		<property name="maxUploadSize" value="20480000" />
+		<!--resolveLazily属性启用是为了推迟文件解析，以便在UploadAction 中捕获文件大小异常 -->
+		<property name="resolveLazily" value="true" />
+	</bean>
+
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="insert*" propagation="REQUIRED" />
+			<tx:method name="update*" propagation="REQUIRED" />
+			<tx:method name="delete*" propagation="REQUIRED" />
+			<tx:method name="find" read-only="true" />
+			<tx:method name="get" read-only="true" />
+			<tx:method name="*" propagation="REQUIRED" />
+		</tx:attributes>
+	</tx:advice>
+	<aop:config>
+		<aop:pointcut expression="execution(* com.soft.manager.service.*.*(..))"
+			id="pointCut" />
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="pointCut" />
+	</aop:config>
+</beans> 

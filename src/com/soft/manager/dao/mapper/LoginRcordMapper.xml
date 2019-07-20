@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.soft.manager.dao.LoginRecordDao">
+	<resultMap id="BaseResultMap" type="com.soft.common.domain.LoginRecord">
+		<result column="ID" property="id" jdbcType="BIGINT" />
+		<result column="USER_ID" property="userId" jdbcType="BIGINT" />
+		<result column="LOGIN_DATE" property="loginDate" jdbcType="TIMESTAMP" />
+		<result column="LOGIN_ID" property="loginId" jdbcType="VARCHAR" />
+		<result column="USER_NAME" property="userName" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<!-- 查询的字段 -->
+	<sql id="Base_Column_List">
+		ID,USER_ID,LOGIN_DATE
+	</sql>
+
+	<select id="getLoginRecordCount" parameterType="com.soft.common.domain.LoginRecord"
+		resultType="java.lang.Integer">
+		SELECT
+		COUNT(LOGIN_RECORD.ID)
+		FROM LOGIN_RECORD LEFT JOIN USER_INFO ON
+		LOGIN_RECORD.USER_ID=USER_INFO.USER_ID
+		WHERE 1=1
+		<if test="userId != null and userId != ''">
+			AND LOGIN_RECORD.USER_ID =#{userId,jdbcType=BIGINT}
+		</if>
+		<if test="loginId != null and loginId != ''">
+			AND LOGIN_ID LIKE
+			CONCAT('%',#{loginId,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="userName != null and userName != ''">
+			AND USER_NAME LIKE
+			CONCAT('%',#{userName,jdbcType=VARCHAR},'%'))
+		</if>
+		<if test="startDate != null and startDate != ''">
+			AND LOGIN_DATE >=
+			#{startDate,jdbcType=TIMESTAMP}
+		</if>
+		<if test="endDate != null and endDate != ''">
+			<![CDATA[AND LOGIN_DATE < DATE_ADD(#{endDate,jdbcType=TIMESTAMP}, INTERVAL 1 DAY)]]>
+		</if>
+	</select>
+
+	<!-- 根据条件查询后台用户登录记录信息 -->
+	<select id="getLoginRecordList" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		SELECT
+		ID,LOGIN_RECORD.USER_ID,LOGIN_DATE,LOGIN_ID,USER_NAME
+		FROM
+		LOGIN_RECORD LEFT JOIN USER_INFO ON LOGIN_RECORD.USER_ID=
+		USER_INFO.USER_ID WHERE 1=1
+		<if test="record.userId != null and record.userId != ''">
+			AND LOGIN_RECORD.USER_ID =#{record.userId,jdbcType=BIGINT}
+		</if>
+		<if test="record.loginId != null and record.loginId != ''">
+			AND LOGIN_ID LIKE
+			CONCAT('%',#{record.loginId,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="record.userName != null and record.userName != ''">
+			AND USER_NAME LIKE
+			CONCAT('%',#{record.userName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="record.startDate != null and record.startDate != ''">
+			AND LOGIN_DATE >=
+			#{record.startDate,jdbcType=TIMESTAMP}
+		</if>
+		<if test="record.endDate != null and record.endDate != ''">
+			<![CDATA[AND LOGIN_DATE < DATE_ADD(#{record.endDate,jdbcType=TIMESTAMP}, INTERVAL 1 DAY)]]>
+		</if>
+		ORDER BY LOGIN_DATE DESC
+		LIMIT
+		#{startIndex}, #{pageSize}
+	</select>
+	<!-- 添加登录记录 -->
+	<insert id="inserLoginRecord" parameterType="com.soft.common.domain.LoginRecord">
+		INSERT INTO
+		LOGIN_RECORD
+		(LOGIN_DATE, USER_ID)
+		VALUES
+		(#{loginDate,jdbcType=TIMESTAMP},
+		#{userId,jdbcType=BIGINT})
+	</insert>
+</mapper>
